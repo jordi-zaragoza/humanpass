@@ -1,6 +1,7 @@
 export const SESSION_COOKIE_NAME = "session";
 export const SESSION_TTL_SECONDS = 60 * 60 * 24; // 24 hours
 export const SHORT_CODE_LENGTH = 8;
+export const LINK_TTL_SECONDS = 60; // 1 minute
 
 /** AAGUIDs of known virtual/emulator authenticators. */
 export const BLOCKED_AAGUIDS: ReadonlySet<string> = new Set([

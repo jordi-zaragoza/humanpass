@@ -39,6 +39,47 @@ export function verifyPage(link: Link, origin: string): string {
       <p style="font-size: 0.85rem; color: #888;">
         No personal data is stored. The biometric check never leaves the device.
       </p>
+      <p style="margin-top: 1.5rem; font-size: 0.8rem; color: #b45309; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 0.75rem 1rem; max-width: 420px; margin-left: auto; margin-right: auto;">
+        If the message where you found this link was posted at a different time than shown above, it may not have been written by a human.
+      </p>
+    </div>
+    `,
+  });
+}
+
+export function verifyFraudPage(): string {
+  return layout({
+    title: "Suspicious link — humanpass",
+    body: `
+    <nav class="nav">
+      <a href="/" class="nav-brand">humanpass</a>
+      <span></span>
+    </nav>
+
+    <div style="text-align: center; padding: 2rem 0;">
+      <div style="font-size:2.5rem;margin-bottom:1rem;color:#dc2626;">&#9888;</div>
+      <h1 style="font-size:1.5rem;margin-bottom:0.5rem;">Suspicious activity detected</h1>
+      <p style="color:#666;margin-bottom:1.5rem;">This link was shared across multiple sites, which is not consistent with normal human behavior.</p>
+      <a href="/" class="btn" style="margin-top: 1rem;">Go to humanpass</a>
+    </div>
+    `,
+  });
+}
+
+export function verifyExpiredPage(): string {
+  return layout({
+    title: "Link expired — humanpass",
+    body: `
+    <nav class="nav">
+      <a href="/" class="nav-brand">humanpass</a>
+      <span></span>
+    </nav>
+
+    <div style="text-align: center; padding: 2rem 0;">
+      <div style="font-size:2.5rem;margin-bottom:1rem;color:#d97706;">&#9202;</div>
+      <h1 style="font-size:1.5rem;margin-bottom:0.5rem;">This link has expired</h1>
+      <p style="color:#666;margin-bottom:1.5rem;">This verification link is no longer valid.</p>
+      <a href="/app" class="btn" style="margin-top: 1rem;">Get a new link</a>
     </div>
     `,
   });

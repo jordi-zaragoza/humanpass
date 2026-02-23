@@ -35,14 +35,14 @@ export function homePage(): string {
             <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
           </div>
           <h3 style="font-size:1rem;margin-bottom:0.25rem;">2. Get your link</h3>
-          <p style="font-size:0.9rem;color:#666;">You get a unique verification URL. Copy it with one click.</p>
+          <p style="font-size:0.9rem;color:#666;">You get a timestamped verification URL. Links expire after one minute.</p>
         </div>
         <div>
           <div style="font-size:2rem;margin-bottom:0.5rem;">
             <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           </div>
-          <h3 style="font-size:1rem;margin-bottom:0.25rem;">3. Paste anywhere</h3>
-          <p style="font-size:0.9rem;color:#666;">Add it to your posts, reviews, or comments. Anyone can click to confirm you're real.</p>
+          <h3 style="font-size:1rem;margin-bottom:0.25rem;">3. Share it</h3>
+          <p style="font-size:0.9rem;color:#666;">Add it to your post or comment. Anyone can click to confirm you're real.</p>
         </div>
       </div>
     </div>
