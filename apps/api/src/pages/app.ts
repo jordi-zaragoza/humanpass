@@ -114,6 +114,9 @@ export function authPage(syncToken?: string): string {
     <div class="section" id="auth-section" style="display: none;">
       <button class="btn" id="auth-btn">Continue with passkey</button>
       <div id="error" class="error"></div>
+      <p id="stuck-hint" style="display:none;margin-top:1.25rem;font-size:0.8rem;color:#b45309;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:0.75rem 1rem;max-width:400px;margin-left:auto;margin-right:auto;">
+        Stuck? If you use a third-party password manager (NordPass, 1Password, etc.) as your passkey provider, try switching to your device's built-in option (Google Password Manager or iCloud Keychain) in your device settings.
+      </p>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
@@ -219,6 +222,9 @@ export function authPage(syncToken?: string): string {
         authBtn.disabled = true;
         const errorDiv = document.getElementById('error');
         errorDiv.textContent = '';
+        const stuckTimer = setTimeout(() => {
+          document.getElementById('stuck-hint').style.display = '';
+        }, 5000);
 
         try {
           // 1. Try login first (existing passkey)
@@ -256,8 +262,10 @@ export function authPage(syncToken?: string): string {
             const data = await verifyRes.json();
             throw new Error(data.error || 'Registration failed');
           }
+          clearTimeout(stuckTimer);
           location.href = phoneSyncToken ? '/app?sync=' + phoneSyncToken : '/app';
         } catch (err) {
+          clearTimeout(stuckTimer);
           errorDiv.textContent = err.message || 'Authentication failed. Please try again.';
           authBtn.disabled = false;
         }
