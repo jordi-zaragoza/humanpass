@@ -87,7 +87,7 @@ export function developersPage(): string {
     </div>
 
     <footer style="text-align:center;padding:1.5rem 0;color:#aaa;font-size:0.8rem;">
-      <a href="/" style="color:#aaa;">humanpass</a> &middot; <a href="/privacy" style="color:#aaa;">Privacy</a>
+      <a href="/" style="color:#aaa;">humanpass</a> &middot; <a href="https://github.com/jordi-zaragoza/humanpass" style="color:#aaa;">GitHub</a> &middot; <a href="/privacy" style="color:#aaa;">Privacy</a>
     </footer>
     `,
   });

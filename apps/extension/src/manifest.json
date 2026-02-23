@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "humanpass",
+  "version": "1.0.0",
+  "description": "Generate humanpass verification links with one click",
+  "permissions": [],
+  "host_permissions": [
+    "https://humanpass.latent-k.workers.dev/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "humanpass"
+  },
+  "icons": {}
+}
