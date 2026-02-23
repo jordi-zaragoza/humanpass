@@ -7,6 +7,7 @@ import { homePage } from "./pages/home.js";
 import { appPage, authPage } from "./pages/app.js";
 import { verifyPage, verifyFraudPage, verifyNotFoundPage } from "./pages/verify.js";
 import { privacyPage } from "./pages/privacy.js";
+import { developersPage } from "./pages/developers.js";
 import { getLinkByShortCode, createLink } from "./db/queries.js";
 import { SESSION_COOKIE_NAME, SHORT_CODE_LENGTH } from "./constants.js";
 import type { SessionData } from "./types.js";
@@ -37,12 +38,34 @@ async function checkRefererFraud(kv: Env["KV"], shortCode: string, referer: stri
   return stored === refOrigin ? "ok" : "fraud";
 }
 
-// CORS: reject cross-origin API requests
+// CORS: public verify + sync endpoints are open to any origin
+for (const path of ["/api/v1/verify/*", "/api/v1/sync/*"]) {
+  app.use(path, async (c, next) => {
+    const origin = c.req.header("origin");
+    if (c.req.method === "OPTIONS") {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          "Access-Control-Allow-Origin": origin || "*",
+          "Access-Control-Allow-Methods": "GET, OPTIONS",
+          "Access-Control-Max-Age": "86400",
+        },
+      });
+    }
+    await next();
+    if (origin) {
+      c.header("Access-Control-Allow-Origin", origin);
+    }
+  });
+}
+
+// CORS: reject cross-origin for everything else
 app.use("/api/*", async (c, next) => {
+  if (c.req.path.startsWith("/api/v1/verify/") || c.req.path.startsWith("/api/v1/sync/")) {
+    return next();
+  }
   const origin = c.req.header("origin");
   const expected = getOrigin(c);
-  // Allow requests with no Origin header (same-origin navigations, curl)
-  // Reject requests from different origins
   if (origin && origin !== expected) {
     return c.json({ error: "Forbidden" }, 403);
   }
@@ -80,6 +103,11 @@ app.get("/", (c) => {
 // Privacy policy
 app.get("/privacy", (c) => {
   return c.html(privacyPage());
+});
+
+// Developers
+app.get("/developers", (c) => {
+  return c.html(developersPage());
 });
 
 // Dashboard (auth required)
@@ -135,25 +163,10 @@ app.get("/api/v1/verify/:code", async (c) => {
     return c.json({ verified: false, fraud: true });
   }
 
-  const encoder = new TextEncoder();
-  const key = await crypto.subtle.importKey(
-    "raw",
-    encoder.encode(c.env.VERIFY_SECRET),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"],
-  );
-  const data = encoder.encode(`${link.short_code}:${link.created_at}`);
-  const sigBuf = await crypto.subtle.sign("HMAC", key, data);
-  const signature = [...new Uint8Array(sigBuf)]
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-
   return c.json({
     verified: true,
     shortCode: link.short_code,
     createdAt: link.created_at,
-    signature,
   });
 });
 

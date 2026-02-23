@@ -5,6 +5,11 @@ export function homePage(): string {
     title: "humanpass — proof of humanness for the AI era",
     description: "Prove you're human with biometrics. No passwords, no personal data. Get a verification link in seconds.",
     body: `
+    <nav class="nav">
+      <a href="/" class="nav-brand">humanpass</a>
+      <a href="/developers" style="font-size:0.9rem;color:#666;text-decoration:none;">Developers</a>
+    </nav>
+
     <div class="hero" style="text-align:center;padding:4rem 0 2.5rem;">
       <div style="font-size:3rem;margin-bottom:1rem;">
         <span style="background:#ecfdf5;border:2px solid #059669;border-radius:50%;width:64px;height:64px;display:inline-flex;align-items:center;justify-content:center;">&#10003;</span>
@@ -78,7 +83,7 @@ export function homePage(): string {
 
     <footer style="text-align:center;padding:1.5rem 0;color:#aaa;font-size:0.8rem;">
       humanpass &mdash; proof of humanness for the internet
-      <br><a href="/privacy" style="color:#aaa;">Privacy Policy</a>
+      <br><a href="/developers" style="color:#aaa;">Developers</a> &middot; <a href="/privacy" style="color:#aaa;">Privacy Policy</a>
     </footer>
     `,
   });
