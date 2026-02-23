@@ -1,0 +1,24 @@
+{
+  "name": "humanpass",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-02-14",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "humanpass-db",
+      "database_id": "TO_BE_CREATED"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "TO_BE_CREATED"
+    }
+  ],
+  "vars": {
+    "RP_ID": "localhost",
+    "RP_NAME": "humanpass",
+    "RP_ORIGIN": "http://localhost:8787",
+    "VERIFY_SECRET": "dev-placeholder-replace-in-cloudflare-secrets"
+  }
+}
