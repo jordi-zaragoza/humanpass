@@ -83,7 +83,7 @@ export function homePage(): string {
 
     <footer style="text-align:center;padding:1.5rem 0;color:#aaa;font-size:0.8rem;">
       humanpass &mdash; proof of humanness for the internet
-      <br><a href="/developers" style="color:#aaa;">Developers</a> &middot; <a href="/privacy" style="color:#aaa;">Privacy Policy</a>
+      <br><a href="/developers" style="color:#aaa;">Developers</a> &middot; <a href="https://github.com/jordi-zaragoza/humanpass" style="color:#aaa;">GitHub</a> &middot; <a href="/privacy" style="color:#aaa;">Privacy Policy</a>
     </footer>
     `,
   });
