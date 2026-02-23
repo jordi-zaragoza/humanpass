@@ -78,6 +78,7 @@ export function homePage(): string {
 
     <footer style="text-align:center;padding:1.5rem 0;color:#aaa;font-size:0.8rem;">
       humanpass &mdash; proof of humanness for the internet
+      <br><a href="/privacy" style="color:#aaa;">Privacy Policy</a>
     </footer>
     `,
   });

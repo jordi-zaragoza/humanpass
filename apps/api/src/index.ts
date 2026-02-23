@@ -6,6 +6,7 @@ import links from "./routes/links.js";
 import { homePage } from "./pages/home.js";
 import { appPage, authPage } from "./pages/app.js";
 import { verifyPage, verifyNotFoundPage } from "./pages/verify.js";
+import { privacyPage } from "./pages/privacy.js";
 import { getLinksByUserId, getLinkByShortCode, createLink } from "./db/queries.js";
 import { SESSION_COOKIE_NAME, SHORT_CODE_LENGTH } from "./constants.js";
 import type { SessionData } from "./types.js";
@@ -54,6 +55,11 @@ app.get("/api/v1/sync/:token", async (c) => {
 // Landing page
 app.get("/", (c) => {
   return c.html(homePage());
+});
+
+// Privacy policy
+app.get("/privacy", (c) => {
+  return c.html(privacyPage());
 });
 
 // Dashboard (auth required)

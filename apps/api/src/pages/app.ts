@@ -57,6 +57,10 @@ export function appPage(linkUrl: string, syncToken?: string): string {
         location.href = '/';
       });
     </script>
+
+    <footer style="text-align:center;padding:2rem 0 0;color:#aaa;font-size:0.8rem;">
+      <a href="/privacy" style="color:#aaa;">Privacy Policy</a>
+    </footer>
     `,
   });
 }
@@ -196,6 +200,10 @@ export function authPage(syncToken?: string): string {
         }
       });
     </script>
+
+    <footer style="text-align:center;padding:2rem 0 0;color:#aaa;font-size:0.8rem;">
+      <a href="/privacy" style="color:#aaa;">Privacy Policy</a>
+    </footer>
     `,
   });
 }
