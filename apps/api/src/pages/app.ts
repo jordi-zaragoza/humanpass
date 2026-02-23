@@ -19,17 +19,37 @@ export function appPage(linkUrl: string, syncToken?: string): string {
         Verified human
       </div>
       ${message}
-      <div style="margin-top: 1rem;">
-        <code id="link-url" style="cursor:pointer;padding:0.75rem 1.25rem;font-size:1.05rem;display:inline-block;">${linkUrl}</code>
+      <p style="margin-top: 1.5rem; color: #555; font-size: 0.95rem; margin-bottom: 0.5rem;">Your verification link:</p>
+      <div id="link-box" style="cursor:pointer;display:inline-flex;align-items:center;gap:0.5rem;padding:0.75rem 1.25rem;background:#f3f4f6;border:2px solid #d1d5db;border-radius:10px;transition:border-color 0.2s,background 0.2s;">
+        <svg id="copy-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        <svg id="check-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><polyline points="20 6 9 17 4 12"/></svg>
+        <code id="link-url" style="font-size:1.05rem;background:none;padding:0;">${linkUrl}</code>
       </div>
-      <p style="margin-top: 0.5rem; color: #888; font-size: 0.9rem;" id="copy-msg">Tap to copy</p>
+      <p id="copy-msg" style="margin-top: 0.5rem; color: #888; font-size: 0.85rem;">Click to copy</p>
     </div>
 
     <script>
-      document.getElementById('link-url').addEventListener('click', function() {
-        navigator.clipboard.writeText(this.textContent);
-        document.getElementById('copy-msg').textContent = 'Copied!';
-        setTimeout(function() { document.getElementById('copy-msg').textContent = 'Tap to copy'; }, 2000);
+      var linkBox = document.getElementById('link-box');
+      var copyMsg = document.getElementById('copy-msg');
+      var copyIcon = document.getElementById('copy-icon');
+      var checkIcon = document.getElementById('check-icon');
+
+      linkBox.addEventListener('click', function() {
+        navigator.clipboard.writeText(document.getElementById('link-url').textContent);
+        linkBox.style.borderColor = '#059669';
+        linkBox.style.background = '#ecfdf5';
+        copyIcon.style.display = 'none';
+        checkIcon.style.display = '';
+        copyMsg.textContent = 'Copied to clipboard!';
+        copyMsg.style.color = '#059669';
+        setTimeout(function() {
+          linkBox.style.borderColor = '#d1d5db';
+          linkBox.style.background = '#f3f4f6';
+          copyIcon.style.display = '';
+          checkIcon.style.display = 'none';
+          copyMsg.textContent = 'Click to copy';
+          copyMsg.style.color = '#888';
+        }, 3000);
       });
 
       document.getElementById('logout-btn').addEventListener('click', async function() {
@@ -90,12 +110,29 @@ export function registerPage(syncToken?: string): string {
             syncStatus.innerHTML =
               '<div class="badge" style="font-size: 1rem; margin-bottom: 0.75rem;">' +
               '<span class="badge-check">&#10003;</span> Link generated!</div>' +
-              '<div style="margin-top: 0.5rem;"><code id="sync-link" style="cursor:pointer;padding:0.5rem 1rem;font-size:1rem;">' +
-              data.url + '</code></div>' +
-              '<p style="margin-top: 0.5rem; color: #059669; font-size: 0.9rem;" id="sync-copy-msg">Tap the link to copy</p>';
-            document.getElementById('sync-link').addEventListener('click', function() {
+              '<p style="margin-top: 1rem; color: #555; font-size: 0.95rem; margin-bottom: 0.5rem;">Your verification link:</p>' +
+              '<div id="sync-box" style="cursor:pointer;display:inline-flex;align-items:center;gap:0.5rem;padding:0.75rem 1.25rem;background:#f3f4f6;border:2px solid #d1d5db;border-radius:10px;transition:border-color 0.2s,background 0.2s;">' +
+              '<svg id="sync-copy-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
+              '<svg id="sync-check-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><polyline points="20 6 9 17 4 12"/></svg>' +
+              '<code id="sync-link" style="font-size:1rem;background:none;padding:0;">' + data.url + '</code></div>' +
+              '<p style="margin-top: 0.5rem; color: #888; font-size: 0.85rem;" id="sync-copy-msg">Click to copy</p>';
+            document.getElementById('sync-box').addEventListener('click', function() {
               navigator.clipboard.writeText(data.url);
-              document.getElementById('sync-copy-msg').textContent = 'Copied!';
+              this.style.borderColor = '#059669';
+              this.style.background = '#ecfdf5';
+              document.getElementById('sync-copy-icon').style.display = 'none';
+              document.getElementById('sync-check-icon').style.display = '';
+              var msg = document.getElementById('sync-copy-msg');
+              msg.textContent = 'Copied to clipboard!';
+              msg.style.color = '#059669';
+              setTimeout(function() {
+                document.getElementById('sync-box').style.borderColor = '#d1d5db';
+                document.getElementById('sync-box').style.background = '#f3f4f6';
+                document.getElementById('sync-copy-icon').style.display = '';
+                document.getElementById('sync-check-icon').style.display = 'none';
+                msg.textContent = 'Click to copy';
+                msg.style.color = '#888';
+              }, 3000);
             });
           }
         } catch(e) {}
@@ -118,7 +155,9 @@ export function registerPage(syncToken?: string): string {
 
         try {
           const optRes = await fetch('/api/v1/auth/register/options', { method: 'POST' });
-          const { options, userId } = await optRes.json();
+          const optData = await optRes.json();
+          if (!optRes.ok) throw new Error(optData.error || 'Failed to get registration options');
+          const { options, userId } = optData;
           const credential = await startRegistration({ optionsJSON: options });
           const verifyRes = await fetch('/api/v1/auth/register/verify', {
             method: 'POST',

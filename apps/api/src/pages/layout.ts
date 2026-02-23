@@ -100,14 +100,6 @@ export function layout(opts: {
       margin-bottom: 1.5rem;
     }
     .nav-brand { font-weight: 700; font-size: 1.1rem; text-decoration: none; color: #111; }
-    #copy-msg {
-      display: inline-block;
-      margin-left: 0.5rem;
-      color: #059669;
-      font-size: 0.9rem;
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
   </style>
 </head>
 <body>

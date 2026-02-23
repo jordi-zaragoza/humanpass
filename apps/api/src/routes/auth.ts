@@ -33,7 +33,7 @@ function getRpInfo(c: { req: { header: (name: string) => string | undefined }; e
 const auth = new Hono<{ Bindings: Env }>();
 
 // Rate limits
-const registerLimit = rateLimit({ max: 3, windowSecs: 86400, prefix: "register" });  // 3/day
+const registerLimit = rateLimit({ max: 50, windowSecs: 86400, prefix: "register" });  // 50/day (raise to 3 in prod)
 const loginLimit = rateLimit({ max: 20, windowSecs: 3600, prefix: "login" });         // 20/hour
 
 // --- Registration ---
@@ -51,7 +51,7 @@ auth.post("/register/options", registerLimit, async (c) => {
       residentKey: "preferred",
       userVerification: "required",
     },
-    attestationType: "direct",
+    attestationType: "none",
   });
 
   // Store challenge in KV for verification
@@ -95,35 +95,10 @@ auth.post("/register/verify", registerLimit, async (c) => {
     return c.json({ error: "Registration verification failed" }, 400);
   }
 
-  const { credential, aaguid, attestationObject } = verification.registrationInfo;
-
-  // Extract attestation format from attestationObject CBOR
-  const fmt = (() => {
-    try {
-      // attestationObject is a Uint8Array containing CBOR. The "fmt" field
-      // is near the start. We do a lightweight scan for the 3-byte CBOR
-      // string key "fmt" followed by the value string.
-      const bytes = new Uint8Array(attestationObject);
-      for (let i = 0; i < bytes.length - 5; i++) {
-        if (bytes[i] === 0x63 && bytes[i + 1] === 0x66 && bytes[i + 2] === 0x6d && bytes[i + 3] === 0x74) {
-          // Next byte is CBOR string header for the value
-          const len = bytes[i + 4] & 0x1f; // low 5 bits = string length (major type 3)
-          if (len > 0 && len < 32) {
-            return new TextDecoder().decode(bytes.slice(i + 5, i + 5 + len));
-          }
-        }
-      }
-    } catch { /* fall through */ }
-    return "unknown";
-  })();
+  const { credential, aaguid } = verification.registrationInfo;
 
   // Block known emulator AAGUIDs
   if (aaguid && BLOCKED_AAGUIDS.has(aaguid)) {
-    return c.json({ error: "This authenticator type is not allowed" }, 403);
-  }
-
-  // All-zeros AAGUID + no attestation = almost certainly an emulator
-  if (aaguid === "00000000-0000-0000-0000-000000000000" && fmt === "none") {
     return c.json({ error: "This authenticator type is not allowed" }, 403);
   }
 
