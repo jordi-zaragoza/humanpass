@@ -6,19 +6,18 @@
     {
       "binding": "DB",
       "database_name": "humanpass-db",
-      "database_id": "TO_BE_CREATED"
+      "database_id": "e142fdfe-24ce-456a-93c9-067a5c82adba"
     }
   ],
   "kv_namespaces": [
     {
       "binding": "KV",
-      "id": "TO_BE_CREATED"
+      "id": "c0e17839af3b413eb86618e1b6243d6e"
     }
   ],
   "vars": {
-    "RP_ID": "localhost",
+    "RP_ID": "humanpass.latent-k.workers.dev",
     "RP_NAME": "humanpass",
-    "RP_ORIGIN": "http://localhost:8787",
-    "VERIFY_SECRET": "dev-placeholder-replace-in-cloudflare-secrets"
+    "RP_ORIGIN": "https://humanpass.latent-k.workers.dev"
   }
 }

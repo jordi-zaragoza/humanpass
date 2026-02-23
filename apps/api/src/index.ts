@@ -4,7 +4,7 @@ import type { Env } from "./env.js";
 import auth from "./routes/auth.js";
 import links from "./routes/links.js";
 import { homePage } from "./pages/home.js";
-import { appPage, registerPage } from "./pages/app.js";
+import { appPage, authPage } from "./pages/app.js";
 import { verifyPage, verifyNotFoundPage } from "./pages/verify.js";
 import { getLinksByUserId, getLinkByShortCode, createLink } from "./db/queries.js";
 import { SESSION_COOKIE_NAME, SHORT_CODE_LENGTH } from "./constants.js";
@@ -62,12 +62,12 @@ app.get("/app", async (c) => {
 
   const token = getCookie(c, SESSION_COOKIE_NAME);
   if (!token) {
-    return c.html(registerPage(syncToken));
+    return c.html(authPage(syncToken));
   }
 
   const data = await c.env.KV.get(`session:${token}`, "json");
   if (!data) {
-    return c.html(registerPage(syncToken));
+    return c.html(authPage(syncToken));
   }
 
   const { userId } = data as SessionData;

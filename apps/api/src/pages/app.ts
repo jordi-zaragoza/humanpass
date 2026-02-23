@@ -61,26 +61,26 @@ export function appPage(linkUrl: string, syncToken?: string): string {
   });
 }
 
-export function registerPage(syncToken?: string): string {
+export function authPage(syncToken?: string): string {
   return layout({
-    title: "humanpass — register",
+    title: "humanpass — sign in",
     body: `
     <nav class="nav">
       <a href="/" class="nav-brand">humanpass</a>
       <span></span>
     </nav>
 
-    <h1>Create your passkey</h1>
-    <p>Use your device's biometrics (Face ID, fingerprint) to register. No password needed.</p>
+    <h1>Continue with passkey</h1>
+    <p>Use your device's biometrics (Face ID, fingerprint) to sign in or register. No password needed.</p>
 
     <div class="section" id="qr-section" style="text-align: center; display: none;">
-      <p style="font-size: 0.95rem; color: #555; margin-bottom: 1rem;">Scan with your phone to register:</p>
+      <p style="font-size: 0.95rem; color: #555; margin-bottom: 1rem;">Scan with your phone to continue:</p>
       <div id="qr"></div>
       <div id="sync-status" style="margin-top: 1rem;"></div>
     </div>
 
-    <div class="section" id="register-section" style="display: none;">
-      <button class="btn" id="register-btn">Register with passkey</button>
+    <div class="section" id="auth-section" style="display: none;">
+      <button class="btn" id="auth-btn">Continue with passkey</button>
       <div id="error" class="error"></div>
     </div>
 
@@ -89,7 +89,7 @@ export function registerPage(syncToken?: string): string {
       // Only show QR on desktop (no touch = not a phone)
       var isPhone = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
       if (isPhone) {
-        document.getElementById('register-section').style.display = '';
+        document.getElementById('auth-section').style.display = '';
       } else {
         document.getElementById('qr-section').style.display = '';
 
@@ -141,19 +141,40 @@ export function registerPage(syncToken?: string): string {
     </script>
 
     <script type="module">
-      import { startRegistration } from 'https://esm.sh/@simplewebauthn/browser@11';
+      import { startAuthentication, startRegistration } from 'https://esm.sh/@simplewebauthn/browser@11';
 
       // Grab sync token from URL if present (phone opened via QR)
       const params = new URLSearchParams(window.location.search);
       const phoneSyncToken = params.get('sync');
 
-      const regBtn = document.getElementById('register-btn');
-      if (regBtn) regBtn.addEventListener('click', async () => {
-        regBtn.disabled = true;
+      const authBtn = document.getElementById('auth-btn');
+      if (authBtn) authBtn.addEventListener('click', async () => {
+        authBtn.disabled = true;
         const errorDiv = document.getElementById('error');
         errorDiv.textContent = '';
 
         try {
+          // 1. Try login first (existing passkey)
+          try {
+            const loginOptRes = await fetch('/api/v1/auth/login/options', { method: 'POST' });
+            const loginOptData = await loginOptRes.json();
+            if (loginOptRes.ok) {
+              const credential = await startAuthentication({ optionsJSON: loginOptData.options });
+              const verifyRes = await fetch('/api/v1/auth/login/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ response: credential }),
+              });
+              if (verifyRes.ok) {
+                location.href = phoneSyncToken ? '/app?sync=' + phoneSyncToken : '/app';
+                return;
+              }
+            }
+          } catch (_e) {
+            // No passkey found or user cancelled — fall through to register
+          }
+
+          // 2. Fallback: register new passkey
           const optRes = await fetch('/api/v1/auth/register/options', { method: 'POST' });
           const optData = await optRes.json();
           if (!optRes.ok) throw new Error(optData.error || 'Failed to get registration options');
@@ -168,11 +189,10 @@ export function registerPage(syncToken?: string): string {
             const data = await verifyRes.json();
             throw new Error(data.error || 'Registration failed');
           }
-          // Preserve sync token so dashboard auto-generates link
           location.href = phoneSyncToken ? '/app?sync=' + phoneSyncToken : '/app';
         } catch (err) {
-          errorDiv.textContent = err.message || 'Registration failed. Please try again.';
-          regBtn.disabled = false;
+          errorDiv.textContent = err.message || 'Authentication failed. Please try again.';
+          authBtn.disabled = false;
         }
       });
     </script>
