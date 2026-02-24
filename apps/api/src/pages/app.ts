@@ -193,20 +193,24 @@ export function authPage(syncToken?: string): string {
           updateSyncCountdown();
         }
 
-        var pollInterval = setInterval(async function() {
-        try {
-          var res = await fetch('/api/v1/sync/' + syncToken);
-          var data = await res.json();
-          if (data.scanned && !data.ready) {
-            document.getElementById('qr').style.display = 'none';
-            document.querySelector('#qr-section > p').style.display = 'none';
-            syncStatus.innerHTML = '<p style="color:#059669;font-size:0.9rem;">QR scanned! Waiting for biometric verification on your phone...</p><p style="color:#888;font-size:0.8rem;margin-top:0.25rem;">It can take a few seconds.</p>';
-          }
-          if (data.ready && data.createdAt !== currentCreatedAt) {
-            showSyncLink(data);
-          }
-        } catch(e) {}
-      }, 2000);
+        async function pollSync() {
+          try {
+            var res = await fetch('/api/v1/sync/' + syncToken);
+            var data = await res.json();
+            if (data.scanned && !data.ready) {
+              document.getElementById('qr').style.display = 'none';
+              document.querySelector('#qr-section > p').style.display = 'none';
+              if (!document.getElementById('sync-check-btn')) {
+                syncStatus.innerHTML = '<p style="color:#059669;font-size:0.9rem;">QR scanned! Waiting for biometric verification on your phone...</p><p style="color:#888;font-size:0.8rem;margin-top:0.25rem;">It can take a few seconds.</p><button id="sync-check-btn" class="btn" style="margin-top:1rem;font-size:0.85rem;padding:0.5rem 1.25rem;">Check now</button>';
+                document.getElementById('sync-check-btn').addEventListener('click', pollSync);
+              }
+            }
+            if (data.ready && data.createdAt !== currentCreatedAt) {
+              showSyncLink(data);
+            }
+          } catch(e) {}
+        }
+        var pollInterval = setInterval(pollSync, 2000);
       } // end if desktop
     </script>
 
