@@ -8,6 +8,7 @@ import { appPage, authPage } from "./pages/app.js";
 import { verifyPage, verifyFraudPage, verifyNotFoundPage } from "./pages/verify.js";
 import { privacyPage } from "./pages/privacy.js";
 import { developersPage } from "./pages/developers.js";
+import { popupPage } from "./pages/popup.js";
 import { getLinkByShortCode, getLinksByUserId, createLink } from "./db/queries.js";
 import { SESSION_COOKIE_NAME, SHORT_CODE_LENGTH, LINK_TTL_SECONDS } from "./constants.js";
 import type { SessionData } from "./types.js";
@@ -108,6 +109,58 @@ app.get("/privacy", (c) => {
 // Developers
 app.get("/developers", (c) => {
   return c.html(developersPage());
+});
+
+// Popup verification (opened by SDK)
+app.get("/verify/popup", (c) => {
+  return c.html(popupPage());
+});
+
+// JavaScript SDK
+app.get("/sdk.js", (c) => {
+  c.header("Content-Type", "application/javascript");
+  c.header("Cache-Control", "public, max-age=300");
+  const origin = getOrigin(c);
+  return c.body(`(function(){
+  "use strict";
+  var HP = {};
+  HP.verify = function() {
+    return new Promise(function(resolve, reject) {
+      var w = 420, h = 520;
+      var left = (screen.width - w) / 2;
+      var top = (screen.height - h) / 2;
+      var popup = window.open(
+        "${origin}/verify/popup",
+        "humanpass",
+        "width=" + w + ",height=" + h + ",left=" + left + ",top=" + top + ",scrollbars=no,resizable=no"
+      );
+      if (!popup) {
+        reject(new Error("Popup blocked. Please allow popups for this site."));
+        return;
+      }
+      var done = false;
+      function onMessage(e) {
+        if (e.source !== popup || e.origin !== "${origin}") return;
+        done = true;
+        cleanup();
+        resolve(e.data);
+      }
+      var timer = setInterval(function() {
+        if (popup.closed && !done) {
+          done = true;
+          cleanup();
+          reject(new Error("Verification cancelled."));
+        }
+      }, 500);
+      function cleanup() {
+        window.removeEventListener("message", onMessage);
+        clearInterval(timer);
+      }
+      window.addEventListener("message", onMessage);
+    });
+  };
+  window.Humanpass = HP;
+})();`);
 });
 
 // Dashboard (auth required)

@@ -12,15 +12,14 @@ CAPTCHAs prove "probably not a bot." Humanpass proves **a physical human is pres
 |---|---|---|
 | AI bots | GPT-4V already solves visual CAPTCHAs | Can't fake a fingerprint |
 | CAPTCHA farms | $2 per 1,000 solved | Requires the real biometric |
-| Sybil attacks (1 person = 100 accounts) | Doesn't prevent it | 1 passkey = 1 physical device |
 | Privacy | reCAPTCHA tracks via Google cookies | No cookies, no tracking |
+| What it proves | "Probably not a bot" | "A human was physically present at this time" |
 
-Humanpass is not a CAPTCHA replacement. It's **proof of unique humanness** for use cases where that matters:
+Humanpass is not a CAPTCHA replacement. It's **proof of human presence** for use cases where that matters:
 
-- Online voting
-- Airdrops and rewards (anti-sybil)
-- Communities that need 1 person = 1 account
-- Any platform where AI can impersonate humans
+- Social platforms where AI can impersonate humans
+- Comment sections and forums that want real human conversations
+- Any context where you need timestamped proof that a person was there
 
 ## How it works
 
@@ -58,7 +57,7 @@ Public endpoint. No authentication required. CORS enabled for all origins.
 const code = /* code submitted by the user */;
 
 const res = await fetch(
-  `https://humanpass.latent-k.workers.dev/api/v1/verify/${code}`
+  `https://human-pass.org/api/v1/verify/${code}`
 );
 const data = await res.json();
 
