@@ -8,8 +8,8 @@ import { appPage, authPage } from "./pages/app.js";
 import { verifyPage, verifyFraudPage, verifyNotFoundPage } from "./pages/verify.js";
 import { privacyPage } from "./pages/privacy.js";
 import { developersPage } from "./pages/developers.js";
-import { getLinkByShortCode, createLink } from "./db/queries.js";
-import { SESSION_COOKIE_NAME, SHORT_CODE_LENGTH } from "./constants.js";
+import { getLinkByShortCode, getLinksByUserId, createLink } from "./db/queries.js";
+import { SESSION_COOKIE_NAME, SHORT_CODE_LENGTH, LINK_TTL_SECONDS } from "./constants.js";
 import type { SessionData } from "./types.js";
 import { nanoid } from "nanoid";
 
@@ -129,14 +129,24 @@ app.get("/app", async (c) => {
   const { userId } = data as SessionData;
   const origin = getOrigin(c);
 
-  // Always generate a fresh link (links expire after 1 min)
-  const now = new Date();
-  const pad = (n: number) => String(n).padStart(2, "0");
-  const datePart = `${now.getUTCFullYear()}${pad(now.getUTCMonth() + 1)}${pad(now.getUTCDate())}`;
-  const timePart = `${pad(now.getUTCHours())}${pad(now.getUTCMinutes())}`;
-  const shortCode = `${datePart}-${timePart}-${nanoid(4)}`;
-  const id = crypto.randomUUID();
-  const link = await createLink(c.env.DB, { id, user_id: userId, short_code: shortCode });
+  // Reuse existing link if it hasn't expired yet
+  const existing = await getLinksByUserId(c.env.DB, userId, 1);
+  let link;
+  if (existing.length > 0) {
+    const age = (Date.now() - new Date(existing[0].created_at).getTime()) / 1000;
+    if (age < LINK_TTL_SECONDS) {
+      link = existing[0];
+    }
+  }
+  if (!link) {
+    const now = new Date();
+    const pad = (n: number) => String(n).padStart(2, "0");
+    const datePart = `${now.getUTCFullYear()}${pad(now.getUTCMonth() + 1)}${pad(now.getUTCDate())}`;
+    const timePart = `${pad(now.getUTCHours())}${pad(now.getUTCMinutes())}`;
+    const shortCode = `${datePart}-${timePart}-${nanoid(4)}`;
+    const id = crypto.randomUUID();
+    link = await createLink(c.env.DB, { id, user_id: userId, short_code: shortCode });
+  }
   const url = `${origin}/v/${link.short_code}`;
 
   // If opened from QR (sync token), send the link back to the computer
