@@ -6,7 +6,8 @@
     "dev": "turbo dev",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
-    "deploy:prod": "turbo build --filter=@humanpass/api && pnpm --filter @humanpass/api run deploy"
+    "deploy:prod": "turbo build --filter=@humanpass/api && pnpm --filter @humanpass/api run deploy",
+    "test": "turbo test"
   },
   "devDependencies": {
     "turbo": "^2.4.0",
