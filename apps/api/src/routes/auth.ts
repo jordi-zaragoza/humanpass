@@ -34,7 +34,7 @@ const auth = new Hono<{ Bindings: Env }>();
 
 // Rate limits
 const registerLimit = rateLimit({ max: 50, windowSecs: 86400, prefix: "register" });  // 50/day (raise to 3 in prod)
-const loginLimit = rateLimit({ max: 20, windowSecs: 3600, prefix: "login" });         // 20/hour
+const passLimit = rateLimit({ max: 20, windowSecs: 3600, prefix: "pass" });           // 20/hour
 
 // --- Registration ---
 
@@ -123,9 +123,9 @@ auth.post("/register/verify", registerLimit, async (c) => {
   return c.json({ verified: true });
 });
 
-// --- Login ---
+// --- Pass (authenticate with existing passkey) ---
 
-auth.post("/login/options", loginLimit, async (c) => {
+auth.post("/pass/options", passLimit, async (c) => {
   const { rpID } = getRpInfo(c);
   const options = await generateAuthenticationOptions({
     rpID,
@@ -134,7 +134,7 @@ auth.post("/login/options", loginLimit, async (c) => {
 
   // Store challenge in KV keyed by the challenge itself (discoverable credentials)
   await c.env.KV.put(
-    `challenge:login:${options.challenge}`,
+    `challenge:pass:${options.challenge}`,
     JSON.stringify({ challenge: options.challenge }),
     { expirationTtl: 300 }
   );
@@ -142,7 +142,7 @@ auth.post("/login/options", loginLimit, async (c) => {
   return c.json({ options });
 });
 
-auth.post("/login/verify", loginLimit, async (c) => {
+auth.post("/pass/verify", passLimit, async (c) => {
   const body = await c.req.json();
   const { response } = body;
 
@@ -159,7 +159,7 @@ auth.post("/login/verify", loginLimit, async (c) => {
     verification = await verifyAuthenticationResponse({
       response,
       expectedChallenge: async (challenge: string) => {
-        const key = `challenge:login:${challenge}`;
+        const key = `challenge:pass:${challenge}`;
         const data = await c.env.KV.get(key, "json");
         if (!data) return false;
         // Consume challenge immediately to prevent replay
@@ -206,9 +206,9 @@ auth.post("/login/verify", loginLimit, async (c) => {
   return c.json({ verified: true });
 });
 
-// --- Logout ---
+// --- Reset session ---
 
-auth.post("/logout", async (c) => {
+auth.post("/reset", async (c) => {
   const token = getCookie(c, SESSION_COOKIE_NAME);
   if (token) {
     await destroySession(c.env.KV, token);

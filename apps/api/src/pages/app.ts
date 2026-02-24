@@ -81,7 +81,7 @@ export function appPage(linkUrl: string, createdAt: string, syncToken?: string):
       updateCountdown();
 
       document.getElementById('renew-btn').addEventListener('click', async function() {
-        await fetch('/api/v1/auth/logout', { method: 'POST' });
+        await fetch('/api/v1/auth/reset', { method: 'POST' });
         location.href = '/app${syncToken ? "?sync=" + syncToken : ""}';
       });
     </script>
@@ -210,6 +210,12 @@ export function authPage(syncToken?: string): string {
           } catch(e) {}
         }
         var pollInterval = setInterval(pollSync, 2000);
+
+        // Browsers throttle setInterval in background tabs (up to 60s+).
+        // Poll immediately when the user returns to this tab.
+        document.addEventListener('visibilitychange', function() {
+          if (!document.hidden) pollSync();
+        });
       } // end if desktop
     </script>
 
@@ -230,13 +236,13 @@ export function authPage(syncToken?: string): string {
         }, 5000);
 
         try {
-          // 1. Try login first (existing passkey)
+          // 1. Try existing passkey first
           try {
-            const loginOptRes = await fetch('/api/v1/auth/login/options', { method: 'POST' });
-            const loginOptData = await loginOptRes.json();
-            if (loginOptRes.ok) {
-              const credential = await startAuthentication({ optionsJSON: loginOptData.options });
-              const verifyRes = await fetch('/api/v1/auth/login/verify', {
+            const passOptRes = await fetch('/api/v1/auth/pass/options', { method: 'POST' });
+            const passOptData = await passOptRes.json();
+            if (passOptRes.ok) {
+              const credential = await startAuthentication({ optionsJSON: passOptData.options });
+              const verifyRes = await fetch('/api/v1/auth/pass/verify', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ response: credential }),
