@@ -13,14 +13,9 @@ import { getLinkByShortCode, getLinksByUserId, createLink } from "./db/queries.j
 import { SESSION_COOKIE_NAME, SHORT_CODE_LENGTH, LINK_TTL_SECONDS } from "./constants.js";
 import type { SessionData } from "./types.js";
 import { nanoid } from "nanoid";
+import { getOrigin } from "./utils.js";
 
 const app = new Hono<{ Bindings: Env }>();
-
-function getOrigin(c: { req: { header: (name: string) => string | undefined } }) {
-  const host = c.req.header("host") ?? "localhost:8787";
-  const proto = host.split(":")[0] === "localhost" ? "http" : "https";
-  return `${proto}://${host}`;
-}
 
 /** Check if a link has been visited from multiple origins (fraud signal).
  *  Returns "ok" | "fraud". Skips check when there's no Referer. */

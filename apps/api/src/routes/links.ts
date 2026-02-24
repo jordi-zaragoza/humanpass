@@ -5,6 +5,7 @@ import { createLink, getLinksByUserId } from "../db/queries.js";
 import { sessionAuth } from "../middleware/session.js";
 import { rateLimit } from "../middleware/rate-limit.js";
 import { SHORT_CODE_LENGTH } from "../constants.js";
+import { getOrigin } from "../utils.js";
 
 type LinksEnv = {
   Bindings: Env;
@@ -22,9 +23,7 @@ links.post("/", linkLimit, async (c) => {
 
   // Return existing link if user already has one
   const existing = await getLinksByUserId(c.env.DB, userId, 1);
-  const host = c.req.header("host") ?? "localhost:8787";
-  const proto = host.split(":")[0] === "localhost" ? "http" : "https";
-  const origin = `${proto}://${host}`;
+  const origin = getOrigin(c);
 
   if (existing.length > 0) {
     const url = `${origin}/v/${existing[0].short_code}`;
@@ -42,10 +41,7 @@ links.post("/", linkLimit, async (c) => {
 links.get("/", async (c) => {
   const userId = c.get("userId");
   const userLinks = await getLinksByUserId(c.env.DB, userId);
-
-  const host = c.req.header("host") ?? "localhost:8787";
-  const proto = host.split(":")[0] === "localhost" ? "http" : "https";
-  const origin = `${proto}://${host}`;
+  const origin = getOrigin(c);
   return c.json(
     userLinks.map((l) => ({
       url: `${origin}/v/${l.short_code}`,

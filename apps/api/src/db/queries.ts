@@ -92,14 +92,16 @@ export async function createLink(
   db: D1Database,
   link: { id: string; user_id: string; short_code: string }
 ): Promise<Link> {
-  const now = new Date().toISOString();
-  await db
-    .prepare(
+  const now = new Date();
+  const nowISO = now.toISOString();
+  const cutoff = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
+  await db.batch([
+    db.prepare("DELETE FROM links WHERE created_at < ?").bind(cutoff),
+    db.prepare(
       "INSERT INTO links (id, user_id, short_code, created_at) VALUES (?, ?, ?, ?)"
-    )
-    .bind(link.id, link.user_id, link.short_code, now)
-    .run();
-  return { ...link, created_at: now };
+    ).bind(link.id, link.user_id, link.short_code, nowISO),
+  ]);
+  return { ...link, created_at: nowISO };
 }
 
 export async function getLinkByShortCode(

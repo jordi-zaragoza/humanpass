@@ -21,14 +21,7 @@ import {
 } from "../middleware/session.js";
 import { SESSION_COOKIE_NAME, BLOCKED_AAGUIDS } from "../constants.js";
 import { rateLimit } from "../middleware/rate-limit.js";
-
-function getRpInfo(c: { req: { header: (name: string) => string | undefined }; env: Env }) {
-  const host = c.req.header("host") ?? c.env.RP_ID;
-  const rpID = host.split(":")[0];
-  const proto = rpID === "localhost" ? "http" : "https";
-  const origin = `${proto}://${host}`;
-  return { rpID, origin };
-}
+import { getRpInfo } from "../utils.js";
 
 const auth = new Hono<{ Bindings: Env }>();
 
