@@ -200,9 +200,8 @@ export function authPage(syncToken?: string): string {
             if (data.scanned && !data.ready) {
               document.getElementById('qr').style.display = 'none';
               document.querySelector('#qr-section > p').style.display = 'none';
-              if (!document.getElementById('sync-check-btn')) {
-                syncStatus.innerHTML = '<p style="color:#059669;font-size:0.9rem;">QR scanned! Waiting for biometric verification on your phone...</p><p style="color:#888;font-size:0.8rem;margin-top:0.25rem;">It can take a few seconds.</p><button id="sync-check-btn" class="btn" style="margin-top:1rem;font-size:0.85rem;padding:0.5rem 1.25rem;">Check now</button>';
-                document.getElementById('sync-check-btn').addEventListener('click', pollSync);
+              if (!document.getElementById('sync-spinner')) {
+                syncStatus.innerHTML = '<p style="color:#059669;font-size:0.9rem;">QR scanned! Waiting for biometric verification on your phone...</p><div id="sync-spinner" style="margin-top:1.25rem;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/></path></svg></div>';
               }
             }
             if (data.ready && data.createdAt !== currentCreatedAt) {
