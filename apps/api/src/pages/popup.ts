@@ -55,26 +55,37 @@ export function popupPage(): string {
         document.getElementById('qr').innerHTML = qr.createSvgTag({ cellSize: 5, margin: 4 });
 
         var syncStatus = document.getElementById('sync-status');
+        var pendingResult = null;
+
+        function showSpinner() {
+          document.getElementById('qr').style.display = 'none';
+          document.querySelector('#qr-section > p').style.display = 'none';
+          if (!document.getElementById('sync-spinner')) {
+            syncStatus.innerHTML = '<p style="color:#059669;font-size:0.9rem;">QR scanned! Waiting for verification...</p><div id="sync-spinner" style="margin-top:1rem;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/></path></svg></div>';
+          }
+        }
 
         async function pollSync() {
           try {
             var res = await fetch('/api/v1/sync/' + syncToken);
             var data = await res.json();
             if (data.scanned && !data.ready) {
-              document.getElementById('qr').style.display = 'none';
-              document.querySelector('#qr-section > p').style.display = 'none';
-              if (!document.getElementById('sync-spinner')) {
-                syncStatus.innerHTML = '<p style="color:#059669;font-size:0.9rem;">QR scanned! Waiting for verification...</p><div id="sync-spinner" style="margin-top:1rem;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/></path></svg></div>';
-              }
+              showSpinner();
             }
             if (data.ready) {
-              sendResult({ verified: true, shortCode: data.shortCode, createdAt: data.createdAt });
+              sendResult({ verified: true, url: data.url, shortCode: data.shortCode, createdAt: data.createdAt });
               return;
             }
           } catch(e) {}
-          setTimeout(pollSync, 2000);
+          setTimeout(pollSync, 1000);
         }
         pollSync();
+
+        // Poll immediately on focus/visibility change (timers throttled in background)
+        document.addEventListener('visibilitychange', function() {
+          if (!document.hidden) pollSync();
+        });
+        window.addEventListener('focus', pollSync);
       }
     </script>
 
@@ -102,7 +113,7 @@ export function popupPage(): string {
               if (verifyRes.ok) {
                 var linkRes = await fetch('/api/v1/links', { method: 'POST' });
                 var linkData = await linkRes.json();
-                window.opener.postMessage({ verified: true, shortCode: linkData.shortCode, createdAt: linkData.createdAt }, '*');
+                window.opener.postMessage({ verified: true, url: linkData.url, shortCode: linkData.shortCode, createdAt: linkData.createdAt }, '*');
                 document.getElementById('auth-section').style.display = 'none';
                 document.getElementById('success').style.display = '';
                 setTimeout(function() { window.close(); }, 1500);
@@ -131,7 +142,7 @@ export function popupPage(): string {
           }
           var linkRes2 = await fetch('/api/v1/links', { method: 'POST' });
           var linkData2 = await linkRes2.json();
-          window.opener.postMessage({ verified: true, shortCode: linkData2.shortCode, createdAt: linkData2.createdAt }, '*');
+          window.opener.postMessage({ verified: true, url: linkData2.url, shortCode: linkData2.shortCode, createdAt: linkData2.createdAt }, '*');
           document.getElementById('auth-section').style.display = 'none';
           document.getElementById('success').style.display = '';
           setTimeout(function() { window.close(); }, 1500);

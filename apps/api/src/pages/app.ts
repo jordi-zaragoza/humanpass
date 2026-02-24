@@ -193,29 +193,34 @@ export function authPage(syncToken?: string): string {
           updateSyncCountdown();
         }
 
+        function showSpinner() {
+          document.getElementById('qr').style.display = 'none';
+          document.querySelector('#qr-section > p').style.display = 'none';
+          if (!document.getElementById('sync-spinner')) {
+            syncStatus.innerHTML = '<p style="color:#059669;font-size:0.9rem;">QR scanned! Waiting for biometric verification on your phone...</p><div id="sync-spinner" style="margin-top:1.25rem;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/></path></svg></div>';
+          }
+        }
+
         async function pollSync() {
           try {
             var res = await fetch('/api/v1/sync/' + syncToken);
             var data = await res.json();
             if (data.scanned && !data.ready) {
-              document.getElementById('qr').style.display = 'none';
-              document.querySelector('#qr-section > p').style.display = 'none';
-              if (!document.getElementById('sync-spinner')) {
-                syncStatus.innerHTML = '<p style="color:#059669;font-size:0.9rem;">QR scanned! Waiting for biometric verification on your phone...</p><div id="sync-spinner" style="margin-top:1.25rem;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/></path></svg></div>';
-              }
+              showSpinner();
             }
             if (data.ready && data.createdAt !== currentCreatedAt) {
               showSyncLink(data);
+              return;
             }
           } catch(e) {}
         }
         var pollInterval = setInterval(pollSync, 2000);
 
-        // Browsers throttle setInterval in background tabs (up to 60s+).
-        // Poll immediately when the user returns to this tab.
+        // Poll immediately on focus/visibility change (timers throttled in background)
         document.addEventListener('visibilitychange', function() {
           if (!document.hidden) pollSync();
         });
+        window.addEventListener('focus', pollSync);
       } // end if desktop
     </script>
 

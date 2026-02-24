@@ -54,6 +54,55 @@ export function homePage(): string {
 
     <div style="margin:0 0 3rem;border-top:1px solid #eee;"></div>
 
+    <div style="text-align:center;margin-bottom:3rem;">
+      <h2 style="font-size:1.4rem;margin-bottom:0.5rem;">Try it yourself</h2>
+      <p style="font-size:0.95rem;color:#666;margin-bottom:1.5rem;">See what a verified message looks like. Click the button to verify with your biometrics.</p>
+
+      <div id="demo-post" style="max-width:480px;margin:0 auto;text-align:left;background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:1.25rem;position:relative;">
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem;">
+          <div style="width:40px;height:40px;background:#e5e7eb;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:#888;">?</div>
+          <div>
+            <div style="display:flex;align-items:center;gap:0.4rem;">
+              <strong style="font-size:0.9rem;">You</strong>
+              <span id="demo-badge" style="display:none;background:#ecfdf5;color:#059669;font-size:0.7rem;font-weight:600;padding:2px 8px;border-radius:99px;">&#10003; Verified human</span>
+            </div>
+            <span id="demo-time" style="font-size:0.8rem;color:#999;">just now</span>
+          </div>
+        </div>
+        <p style="font-size:0.9rem;color:#333;line-height:1.5;margin-bottom:1rem;">Hey, I just wanted to share my thoughts on this. I know it's hard to tell who's real online these days, so here's my proof:</p>
+        <div id="demo-link-area">
+          <button id="demo-verify-btn" class="btn" style="padding:0.6rem 1.5rem;font-size:0.9rem;border-radius:10px;">Verify yourself</button>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:center;gap:0.75rem;margin-top:1.5rem;flex-wrap:wrap;">
+        <span style="font-size:0.8rem;color:#999;background:#f3f4f6;padding:0.35rem 0.75rem;border-radius:99px;">Social media</span>
+        <span style="font-size:0.8rem;color:#999;background:#f3f4f6;padding:0.35rem 0.75rem;border-radius:99px;">Forums</span>
+        <span style="font-size:0.8rem;color:#999;background:#f3f4f6;padding:0.35rem 0.75rem;border-radius:99px;">Chat</span>
+        <span style="font-size:0.8rem;color:#999;background:#f3f4f6;padding:0.35rem 0.75rem;border-radius:99px;">Email</span>
+        <span style="font-size:0.8rem;color:#999;background:#f3f4f6;padding:0.35rem 0.75rem;border-radius:99px;">Any website</span>
+      </div>
+    </div>
+
+    <script src="/sdk.js"></script>
+    <script>
+      document.getElementById('demo-verify-btn').addEventListener('click', function() {
+        var btn = this;
+        btn.disabled = true;
+        btn.textContent = 'Verifying...';
+        Humanpass.verify().then(function(data) {
+          document.getElementById('demo-badge').style.display = '';
+          document.getElementById('demo-link-area').innerHTML =
+            '<a href="' + data.url + '" target="_blank" style="font-size:0.85rem;color:#059669;text-decoration:underline;word-break:break-all;">' + data.url + '</a>';
+        }).catch(function() {
+          btn.disabled = false;
+          btn.textContent = 'Verify yourself';
+        });
+      });
+    </script>
+
+    <div style="margin:0 0 3rem;border-top:1px solid #eee;"></div>
+
     <div style="text-align:center;margin-bottom:2rem;">
       <h2 style="font-size:1.4rem;margin-bottom:1.5rem;">Why humanpass?</h2>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;text-align:left;">
@@ -77,17 +126,16 @@ export function homePage(): string {
     </div>
 
     <div style="text-align:center;padding:2.5rem 0;background:#f9fafb;border-radius:16px;margin-bottom:2rem;">
-      <p style="font-size:1.1rem;color:#333;margin-bottom:1rem;">Ready to prove you're human?</p>
-      <a href="/app" class="btn" style="padding:0.9rem 2rem;font-size:1rem;border-radius:12px;">Get your link</a>
-      <p style="margin-top:1.25rem;">
-        <a href="https://chromewebstore.google.com/detail/humanpass/ndglfpaoghonkmlihklbdnaplcbbldmd" style="font-size:1rem;color:#555;text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;padding:0.7rem 1.5rem;border:1.5px solid #d1d5db;border-radius:10px;transition:border-color 0.2s,background 0.2s;"
+      <p style="font-size:1.1rem;color:#333;margin-bottom:1.25rem;">Ready to prove you're human?</p>
+      <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;">
+        <a href="/app" class="btn" style="padding:0.9rem 2rem;font-size:1rem;border-radius:12px;">Get your link</a>
+        <a href="https://chromewebstore.google.com/detail/humanpass/ndglfpaoghonkmlihklbdnaplcbbldmd" style="font-size:1rem;color:#555;text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;padding:0.9rem 2rem;border:1.5px solid #d1d5db;border-radius:12px;transition:border-color 0.2s,background 0.2s;"
            onmouseover="this.style.borderColor='#059669';this.style.background='#f0fdf4'"
            onmouseout="this.style.borderColor='#d1d5db';this.style.background='transparent'">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="21.17" y1="8" x2="12" y2="8"/><line x1="3.95" y1="6.06" x2="8.54" y2="14"/><line x1="10.88" y1="21.94" x2="15.46" y2="14"/></svg>
-          Get Chrome Extension
+          Chrome Extension
         </a>
-        <span style="display:block;margin-top:0.4rem;font-size:0.8rem;color:#999;">Generate links directly from your browser</span>
-      </p>
+      </div>
     </div>
 
     <footer style="text-align:center;padding:1.5rem 0;color:#aaa;font-size:0.8rem;">
