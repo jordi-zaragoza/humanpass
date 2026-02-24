@@ -6,7 +6,7 @@ export type User = {
 export type Credential = {
   credential_id: string;
   user_id: string;
-  public_key: Uint8Array;
+  public_key: ArrayBuffer;
   counter: number;
   transports: string | null;
   aaguid: string | null;

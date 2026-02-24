@@ -163,11 +163,7 @@ auth.post("/pass/verify", passLimit, async (c) => {
       expectedRPID: rpID,
       credential: {
         id: stored.credential_id,
-        publicKey: new Uint8Array(
-          stored.public_key instanceof ArrayBuffer
-            ? stored.public_key
-            : (stored.public_key as unknown as ArrayBufferLike)
-        ),
+        publicKey: new Uint8Array(stored.public_key),
         counter: stored.counter,
         transports: stored.transports
           ? JSON.parse(stored.transports)

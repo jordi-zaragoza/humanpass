@@ -4,7 +4,6 @@ import type { Env } from "../env.js";
 import { createLink, getLinksByUserId } from "../db/queries.js";
 import { sessionAuth } from "../middleware/session.js";
 import { rateLimit } from "../middleware/rate-limit.js";
-import { SHORT_CODE_LENGTH } from "../constants.js";
 import { getOrigin } from "../utils.js";
 
 type LinksEnv = {
@@ -30,7 +29,11 @@ links.post("/", linkLimit, async (c) => {
     return c.json({ url, shortCode: existing[0].short_code, createdAt: existing[0].created_at });
   }
 
-  const shortCode = nanoid(SHORT_CODE_LENGTH);
+  const now = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const datePart = `${now.getUTCFullYear()}${pad(now.getUTCMonth() + 1)}${pad(now.getUTCDate())}`;
+  const timePart = `${pad(now.getUTCHours())}${pad(now.getUTCMinutes())}`;
+  const shortCode = `${datePart}-${timePart}-${nanoid(4)}`;
   const id = crypto.randomUUID();
   const link = await createLink(c.env.DB, { id, user_id: userId, short_code: shortCode });
   const url = `${origin}/v/${link.short_code}`;

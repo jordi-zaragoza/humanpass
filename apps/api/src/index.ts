@@ -10,7 +10,7 @@ import { privacyPage } from "./pages/privacy.js";
 import { developersPage } from "./pages/developers.js";
 import { popupPage } from "./pages/popup.js";
 import { getLinkByShortCode, getLinksByUserId, createLink } from "./db/queries.js";
-import { SESSION_COOKIE_NAME, SHORT_CODE_LENGTH, LINK_TTL_SECONDS } from "./constants.js";
+import { SESSION_COOKIE_NAME, LINK_TTL_SECONDS } from "./constants.js";
 import type { SessionData } from "./types.js";
 import { nanoid } from "nanoid";
 import { getOrigin } from "./utils.js";

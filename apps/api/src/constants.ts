@@ -1,5 +1,4 @@
 export const SESSION_COOKIE_NAME = "session";
-export const SHORT_CODE_LENGTH = 8;
 export const LINK_TTL_SECONDS = 60; // 1 minute
 export const SESSION_TTL_SECONDS = LINK_TTL_SECONDS;
 
