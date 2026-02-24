@@ -19,6 +19,7 @@ export function layout(opts: {
   <meta property="og:title" content="${ogTitle}">
   <meta property="og:description" content="${ogDesc}">
   <meta property="og:type" content="website">
+  <meta name="google-site-verification" content="0gB-Mk_DQGPEPSkU6mACzdbncjvUh8VXKisSjEgs90c">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {

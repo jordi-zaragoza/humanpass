@@ -79,6 +79,15 @@ export function homePage(): string {
     <div style="text-align:center;padding:2.5rem 0;background:#f9fafb;border-radius:16px;margin-bottom:2rem;">
       <p style="font-size:1.1rem;color:#333;margin-bottom:1rem;">Ready to prove you're human?</p>
       <a href="/app" class="btn" style="padding:0.9rem 2rem;font-size:1rem;border-radius:12px;">Get your link</a>
+      <p style="margin-top:1.25rem;">
+        <a href="https://github.com/jordi-zaragoza/humanpass/releases" style="font-size:1rem;color:#555;text-decoration:none;display:inline-flex;align-items:center;gap:0.5rem;padding:0.7rem 1.5rem;border:1.5px solid #d1d5db;border-radius:10px;transition:border-color 0.2s,background 0.2s;"
+           onmouseover="this.style.borderColor='#059669';this.style.background='#f0fdf4'"
+           onmouseout="this.style.borderColor='#d1d5db';this.style.background='transparent'">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="21.17" y1="8" x2="12" y2="8"/><line x1="3.95" y1="6.06" x2="8.54" y2="14"/><line x1="10.88" y1="21.94" x2="15.46" y2="14"/></svg>
+          Get Chrome Extension
+        </a>
+        <span style="display:block;margin-top:0.4rem;font-size:0.8rem;color:#999;">Generate links directly from your browser</span>
+      </p>
     </div>
 
     <footer style="text-align:center;padding:1.5rem 0;color:#aaa;font-size:0.8rem;">
