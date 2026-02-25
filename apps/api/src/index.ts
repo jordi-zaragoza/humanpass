@@ -245,6 +245,12 @@ app.get("/api/v1/verify/:code", async (c) => {
     return c.json({ verified: false, fraud: true });
   }
 
+  // Optional label check: if ?label= is provided, verify it matches
+  const expectedLabel = c.req.query("label");
+  if (expectedLabel && link.label !== expectedLabel) {
+    return c.json({ verified: false, labelMismatch: true });
+  }
+
   return c.json({
     verified: true,
     shortCode: link.short_code,

@@ -39,7 +39,7 @@ export function developersPage(): string {
 <span style="color:#7dd3fc;">async function</span> verifyHuman() {
   <span style="color:#7dd3fc;">try</span> {
     <span style="color:#7dd3fc;">const</span> result = <span style="color:#7dd3fc;">await</span> Humanpass.verify();
-    <span style="color:#fca5a5;">// result = { verified, shortCode, createdAt }</span>
+    <span style="color:#fca5a5;">// result = { verified, shortCode, createdAt, label? }</span>
     <span style="color:#fca5a5;">// Send shortCode to your backend for validation</span>
     <span style="color:#7dd3fc;">await</span> fetch(<span style="color:#86efac;">'/your-api/verify'</span>, {
       method: <span style="color:#86efac;">'POST'</span>,
@@ -104,11 +104,21 @@ export function developersPage(): string {
     </div>
     <p style="font-size:0.9rem;color:#666;">Public endpoint. No authentication required. CORS enabled for all origins.</p>
 
+    <h3 style="font-size:1rem;margin-top:1.5rem;">Query parameters</h3>
+    <div style="margin:0.75rem 0 1.5rem;">
+      <div style="padding:0.75rem 1rem;background:#fff;border:1px solid #e5e7eb;border-radius:8px;">
+        <code style="background:#f3f4f6;padding:0.15rem 0.35rem;border-radius:3px;font-size:0.85rem;">?label=username</code>
+        <span style="font-size:0.8rem;color:#888;margin-left:0.5rem;">optional</span>
+        <p style="font-size:0.85rem;color:#666;margin:0.25rem 0 0;">If provided, the API checks that the link's label matches. Returns <code style="background:#f3f4f6;padding:0.15rem 0.35rem;border-radius:3px;">verified: false</code> on mismatch. Use this to prevent link reuse by a different user.</p>
+      </div>
+    </div>
+
     <h3 style="font-size:1rem;margin-top:1.5rem;">Successful verification</h3>
     <pre style="background:#111;color:#e5e7eb;padding:1.25rem;border-radius:10px;overflow-x:auto;font-size:0.85rem;line-height:1.5;margin:0.75rem 0 1.5rem;">{
   "verified": true,
   "shortCode": "20260223-1432-rSBp",
-  "createdAt": "2026-02-23T14:32:44.565Z"
+  "createdAt": "2026-02-23T14:32:44.565Z",
+  "label": "u/jordi-zaragoza"  <span style="color:#fca5a5;">// only if set by the user</span>
 }</pre>
 
     <h3 style="font-size:1rem;">Invalid or expired code</h3>
@@ -116,10 +126,16 @@ export function developersPage(): string {
   "verified": false
 }</pre>
 
+    <h3 style="font-size:1rem;">Label mismatch</h3>
+    <pre style="background:#111;color:#e5e7eb;padding:1.25rem;border-radius:10px;overflow-x:auto;font-size:0.85rem;line-height:1.5;margin:0.75rem 0 1.5rem;">{
+  "verified": false,
+  "labelMismatch": true
+}</pre>
+
     <div style="margin:2rem 0;border-top:1px solid #eee;"></div>
 
-    <h2>Example</h2>
-    <p style="font-size:0.9rem;color:#666;margin-bottom:0.75rem;">From your backend (Node.js):</p>
+    <h2>Examples</h2>
+    <p style="font-size:0.9rem;color:#666;margin-bottom:0.75rem;">Basic verification (Node.js):</p>
     <pre style="background:#111;color:#e5e7eb;padding:1.25rem;border-radius:10px;overflow-x:auto;font-size:0.85rem;line-height:1.5;margin:0 0 1.5rem;"><span style="color:#7dd3fc;">const</span> code = <span style="color:#fca5a5;">/* code submitted by the user */</span>;
 
 <span style="color:#7dd3fc;">const</span> res = <span style="color:#7dd3fc;">await</span> fetch(
@@ -135,8 +151,27 @@ export function developersPage(): string {
   }
 }</pre>
 
+    <p style="font-size:0.9rem;color:#666;margin-bottom:0.75rem;">Verify with username (prevents link reuse by another user):</p>
+    <pre style="background:#111;color:#e5e7eb;padding:1.25rem;border-radius:10px;overflow-x:auto;font-size:0.85rem;line-height:1.5;margin:0 0 1.5rem;"><span style="color:#7dd3fc;">const</span> code = <span style="color:#fca5a5;">/* code submitted by the user */</span>;
+<span style="color:#7dd3fc;">const</span> username = <span style="color:#fca5a5;">/* the user's username on your platform */</span>;
+
+<span style="color:#7dd3fc;">const</span> res = <span style="color:#7dd3fc;">await</span> fetch(
+  <span style="color:#86efac;">\`https://human-pass.org/api/v1/verify/\${code}?label=\${username}\`</span>
+);
+<span style="color:#7dd3fc;">const</span> data = <span style="color:#7dd3fc;">await</span> res.json();
+
+<span style="color:#7dd3fc;">if</span> (data.verified) {
+  <span style="color:#fca5a5;">// Human verified AND the label matches this user</span>
+} <span style="color:#7dd3fc;">else if</span> (data.labelMismatch) {
+  <span style="color:#fca5a5;">// Valid code but generated for a different user</span>
+}</pre>
+
     <p style="font-size:0.9rem;color:#666;margin-bottom:0.75rem;">With cURL:</p>
-    <pre style="background:#111;color:#e5e7eb;padding:1.25rem;border-radius:10px;overflow-x:auto;font-size:0.85rem;line-height:1.5;margin:0 0 2rem;">curl https://human-pass.org/api/v1/verify/20260223-1432-rSBp</pre>
+    <pre style="background:#111;color:#e5e7eb;padding:1.25rem;border-radius:10px;overflow-x:auto;font-size:0.85rem;line-height:1.5;margin:0 0 2rem;"><span style="color:#fca5a5;"># Basic</span>
+curl https://human-pass.org/api/v1/verify/20260223-1432-rSBp
+
+<span style="color:#fca5a5;"># With label check</span>
+curl "https://human-pass.org/api/v1/verify/20260223-1432-rSBp?label=u/jordi-zaragoza"</pre>
 
     <div style="margin:0 0;border-top:1px solid #eee;"></div>
 
@@ -145,6 +180,7 @@ export function developersPage(): string {
       <ul style="margin:0.75rem 0 0 1.25rem;color:#444;font-size:0.95rem;line-height:1.8;">
         <li><strong>Call from your backend</strong>, not from client-side JavaScript. This prevents users from spoofing responses.</li>
         <li><strong>Check <code style="background:#f3f4f6;padding:0.15rem 0.35rem;border-radius:3px;">createdAt</code></strong> to ensure the code is recent. Links expire after 1 minute, but you can enforce your own window (e.g. 2 minutes).</li>
+        <li><strong>Use <code style="background:#f3f4f6;padding:0.15rem 0.35rem;border-radius:3px;">?label=</code></strong> to verify the link belongs to a specific user. This prevents someone from reusing another person's verification link.</li>
         <li><strong>Use each code once.</strong> Store verified codes to prevent reuse.</li>
       </ul>
     </div>
