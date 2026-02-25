@@ -3,6 +3,8 @@ dist/
 .next/
 .turbo/
 .wrangler/
+.claude/
+*.zip
 .dev.vars
 *.local
 .env
