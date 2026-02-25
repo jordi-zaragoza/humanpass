@@ -31,6 +31,13 @@ export function popupPage(): string {
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
     <script>
       var isPhone = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      var popupLabel = new URLSearchParams(window.location.search).get('label') || '';
+
+      function createLinkBody() {
+        var obj = {};
+        if (popupLabel) obj.label = popupLabel;
+        return JSON.stringify(obj);
+      }
 
       function sendResult(data) {
         document.getElementById('qr-section').style.display = 'none';
@@ -111,7 +118,7 @@ export function popupPage(): string {
                 body: JSON.stringify({ response: credential }),
               });
               if (verifyRes.ok) {
-                var linkRes = await fetch('/api/v1/links', { method: 'POST' });
+                var linkRes = await fetch('/api/v1/links', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: createLinkBody() });
                 var linkData = await linkRes.json();
                 sendResult({ verified: true, url: linkData.url, shortCode: linkData.shortCode, createdAt: linkData.createdAt });
                 return;
@@ -137,7 +144,7 @@ export function popupPage(): string {
             var errData = await regVerifyRes.json();
             throw new Error(errData.error || 'Registration failed');
           }
-          var linkRes2 = await fetch('/api/v1/links', { method: 'POST' });
+          var linkRes2 = await fetch('/api/v1/links', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: createLinkBody() });
           var linkData2 = await linkRes2.json();
           sendResult({ verified: true, url: linkData2.url, shortCode: linkData2.shortCode, createdAt: linkData2.createdAt });
         } catch (err) {

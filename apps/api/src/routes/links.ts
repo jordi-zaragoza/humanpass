@@ -32,6 +32,10 @@ links.post("/", linkLimit, async (c) => {
     }
   }
 
+  // Parse body early (needed for label + syncToken)
+  const body = await c.req.json().catch(() => ({}));
+  const label = typeof body.label === "string" ? body.label.slice(0, 100).trim() || undefined : undefined;
+
   // Create new link (existing expired or none)
   const now = new Date();
   const pad = (n: number) => String(n).padStart(2, "0");
@@ -39,11 +43,8 @@ links.post("/", linkLimit, async (c) => {
   const timePart = `${pad(now.getUTCHours())}${pad(now.getUTCMinutes())}`;
   const shortCode = `${datePart}-${timePart}-${nanoid(4)}`;
   const id = crypto.randomUUID();
-  const link = await createLink(c.env.DB, { id, user_id: userId, short_code: shortCode });
+  const link = await createLink(c.env.DB, { id, user_id: userId, short_code: shortCode, label });
   const url = `${origin}/v/${link.short_code}`;
-
-  // Update sync KV if syncToken provided (extension flow)
-  const body = await c.req.json().catch(() => ({}));
   if (body.syncToken && typeof body.syncToken === "string" && body.syncToken.length >= 32) {
     await c.env.KV.put(`sync:${body.syncToken}`, JSON.stringify({
       url, shortCode: link.short_code, createdAt: link.created_at,

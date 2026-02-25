@@ -38,8 +38,9 @@ export function developersPage(): string {
 <span style="color:#7dd3fc;">&lt;script&gt;</span>
 <span style="color:#7dd3fc;">async function</span> verifyHuman() {
   <span style="color:#7dd3fc;">try</span> {
-    <span style="color:#7dd3fc;">const</span> result = <span style="color:#7dd3fc;">await</span> Humanpass.verify();
-    <span style="color:#fca5a5;">// result = { verified, shortCode, createdAt, label? }</span>
+    <span style="color:#fca5a5;">// Pass the user's username to bind the verification to them</span>
+    <span style="color:#7dd3fc;">const</span> result = <span style="color:#7dd3fc;">await</span> Humanpass.verify({ label: currentUser.username });
+    <span style="color:#fca5a5;">// result = { verified, shortCode, createdAt }</span>
     <span style="color:#fca5a5;">// Send shortCode to your backend for validation</span>
     <span style="color:#7dd3fc;">await</span> fetch(<span style="color:#86efac;">'/your-api/verify'</span>, {
       method: <span style="color:#86efac;">'POST'</span>,
@@ -52,17 +53,29 @@ export function developersPage(): string {
 }
 <span style="color:#7dd3fc;">&lt;/script&gt;</span></pre>
 
+    <h3 style="font-size:1rem;">Options</h3>
+    <div style="margin:0.75rem 0 1.5rem;">
+      <div style="padding:0.75rem 1rem;background:#fff;border:1px solid #e5e7eb;border-radius:8px;">
+        <code style="background:#f3f4f6;padding:0.15rem 0.35rem;border-radius:3px;font-size:0.85rem;">{ label: "username" }</code>
+        <span style="font-size:0.8rem;color:#888;margin-left:0.5rem;">optional</span>
+        <p style="font-size:0.85rem;color:#666;margin:0.25rem 0 0;">Binds the verification to a specific user. Pass the user's username so your backend can later verify it matches with <code style="background:#f3f4f6;padding:0.15rem 0.35rem;border-radius:3px;">?label=</code>. The user doesn't need to type anything &mdash; the label is set automatically.</p>
+      </div>
+    </div>
+
     <h3 style="font-size:1rem;">Backend validation</h3>
     <pre style="background:#111;color:#e5e7eb;padding:1.25rem;border-radius:10px;overflow-x:auto;font-size:0.85rem;line-height:1.5;margin:0.75rem 0 1.5rem;"><span style="color:#fca5a5;">// In your backend route handler:</span>
 <span style="color:#7dd3fc;">const</span> { code } = req.body;
+<span style="color:#7dd3fc;">const</span> username = req.user.username; <span style="color:#fca5a5;">// the logged-in user</span>
 
 <span style="color:#7dd3fc;">const</span> res = <span style="color:#7dd3fc;">await</span> fetch(
-  <span style="color:#86efac;">\`https://human-pass.org/api/v1/verify/\${code}\`</span>
+  <span style="color:#86efac;">\`https://human-pass.org/api/v1/verify/\${code}?label=\${username}\`</span>
 );
 <span style="color:#7dd3fc;">const</span> data = <span style="color:#7dd3fc;">await</span> res.json();
 
 <span style="color:#7dd3fc;">if</span> (data.verified) {
-  <span style="color:#fca5a5;">// Human verified! Check createdAt for freshness.</span>
+  <span style="color:#fca5a5;">// Human verified AND label matches this user</span>
+} <span style="color:#7dd3fc;">else if</span> (data.labelMismatch) {
+  <span style="color:#fca5a5;">// Someone tried to use another user's verification</span>
 }</pre>
 
     <div style="text-align:center;padding:2rem;background:#fff;border:2px dashed #d1d5db;border-radius:12px;margin:0.5rem 0 2rem;">
@@ -118,7 +131,7 @@ export function developersPage(): string {
   "verified": true,
   "shortCode": "20260223-1432-rSBp",
   "createdAt": "2026-02-23T14:32:44.565Z",
-  "label": "u/jordi-zaragoza"  <span style="color:#fca5a5;">// only if set by the user</span>
+  "label": "u/jordi-zaragoza"  <span style="color:#fca5a5;">// only if label was passed via SDK or app</span>
 }</pre>
 
     <h3 style="font-size:1rem;">Invalid or expired code</h3>

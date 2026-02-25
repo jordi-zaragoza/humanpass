@@ -143,13 +143,16 @@ app.get("/sdk.js", (c) => {
   return c.body(`(function(){
   "use strict";
   var HP = {};
-  HP.verify = function() {
+  HP.verify = function(opts) {
+    opts = opts || {};
     return new Promise(function(resolve, reject) {
       var w = 420, h = 520;
       var left = (screen.width - w) / 2;
       var top = (screen.height - h) / 2;
+      var url = "${origin}/verify/popup";
+      if (opts.label) url += "?label=" + encodeURIComponent(opts.label);
       var popup = window.open(
-        "${origin}/verify/popup",
+        url,
         "humanpass",
         "width=" + w + ",height=" + h + ",left=" + left + ",top=" + top + ",scrollbars=no,resizable=no"
       );
