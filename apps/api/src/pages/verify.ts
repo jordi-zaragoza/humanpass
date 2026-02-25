@@ -30,6 +30,7 @@ export function verifyPage(link: Link, origin: string): string {
         <span class="badge-check">&#10003;</span>
         Verified human
       </div>
+      ${link.label ? `<p style="margin-top: 0.75rem; font-size: 1rem; color: #065f46; font-weight: 600;">${link.label.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>` : ''}
       <p class="timestamp">Link generated on ${formatted}</p>
       <p style="margin-top: 2rem; font-size: 0.9rem; color: #666;">
         This link was created by a real person who verified their identity

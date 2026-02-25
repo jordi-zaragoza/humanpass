@@ -90,7 +90,7 @@ export async function updateCredentialCounter(
 
 export async function createLink(
   db: D1Database,
-  link: { id: string; user_id: string; short_code: string }
+  link: { id: string; user_id: string; short_code: string; label?: string }
 ): Promise<Link> {
   const now = new Date();
   const nowISO = now.toISOString();
@@ -98,10 +98,23 @@ export async function createLink(
   await db.batch([
     db.prepare("DELETE FROM links WHERE created_at < ?").bind(cutoff),
     db.prepare(
-      "INSERT INTO links (id, user_id, short_code, created_at) VALUES (?, ?, ?, ?)"
-    ).bind(link.id, link.user_id, link.short_code, nowISO),
+      "INSERT INTO links (id, user_id, short_code, label, created_at) VALUES (?, ?, ?, ?, ?)"
+    ).bind(link.id, link.user_id, link.short_code, link.label ?? null, nowISO),
   ]);
-  return { ...link, created_at: nowISO };
+  return { ...link, label: link.label ?? null, created_at: nowISO };
+}
+
+export async function updateLinkLabel(
+  db: D1Database,
+  shortCode: string,
+  userId: string,
+  label: string | null
+): Promise<boolean> {
+  const result = await db
+    .prepare("UPDATE links SET label = ? WHERE short_code = ? AND user_id = ?")
+    .bind(label, shortCode, userId)
+    .run();
+  return (result.meta?.changes ?? 0) > 0;
 }
 
 export async function getLinkByShortCode(

@@ -228,7 +228,7 @@ app.get("/app", async (c) => {
     }), { expirationTtl: 300 });
   }
 
-  return c.html(appPage(url, link.created_at, syncToken));
+  return c.html(appPage(url, link.short_code, link.label, link.created_at, syncToken));
 });
 
 // Signed verification API
@@ -249,6 +249,7 @@ app.get("/api/v1/verify/:code", async (c) => {
     verified: true,
     shortCode: link.short_code,
     createdAt: link.created_at,
+    ...(link.label ? { label: link.label } : {}),
   });
 });
 

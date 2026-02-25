@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { nanoid } from "nanoid";
 import type { Env } from "../env.js";
-import { createLink, getLinksByUserId } from "../db/queries.js";
+import { createLink, getLinksByUserId, updateLinkLabel } from "../db/queries.js";
 import { sessionAuth } from "../middleware/session.js";
 import { rateLimit } from "../middleware/rate-limit.js";
 import { getOrigin } from "../utils.js";
@@ -51,6 +51,18 @@ links.post("/", linkLimit, async (c) => {
   }
 
   return c.json({ url, shortCode: link.short_code, createdAt: link.created_at });
+});
+
+links.patch("/:code", async (c) => {
+  const userId = c.get("userId");
+  const code = c.req.param("code");
+  const body = await c.req.json().catch(() => ({}));
+  const label = typeof body.label === "string" ? body.label.slice(0, 100).trim() : null;
+  const updated = await updateLinkLabel(c.env.DB, code, userId, label || null);
+  if (!updated) {
+    return c.json({ error: "Link not found or not yours" }, 404);
+  }
+  return c.json({ ok: true, label });
 });
 
 links.get("/", async (c) => {

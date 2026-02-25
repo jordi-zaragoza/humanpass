@@ -17,5 +17,6 @@ CREATE TABLE links (
   id TEXT PRIMARY KEY,
   user_id TEXT NOT NULL REFERENCES users(id),
   short_code TEXT UNIQUE NOT NULL,
+  label TEXT,
   created_at TEXT NOT NULL
 );

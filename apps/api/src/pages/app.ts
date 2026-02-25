@@ -1,6 +1,6 @@
 import { layout } from "./layout.js";
 
-export function appPage(linkUrl: string, createdAt: string, syncToken?: string): string {
+export function appPage(linkUrl: string, shortCode: string, label: string | null, createdAt: string, syncToken?: string): string {
   const message = syncToken
     ? '<p style="color:#059669;font-weight:600;margin-bottom:0.5rem;">Link generated and sent to your computer!</p>'
     : '';
@@ -28,6 +28,20 @@ export function appPage(linkUrl: string, createdAt: string, syncToken?: string):
         </div>
         <p id="copy-msg" style="margin-top: 0.5rem; color: #888; font-size: 0.85rem;">Click to copy</p>
         <p id="countdown" style="margin-top: 0.75rem; font-size: 0.9rem; color: #d97706; font-weight: 600;"></p>
+        <div id="label-section" style="margin-top: 1.25rem;">
+          <div id="label-display" style="display:${label ? '' : 'none'};font-size:0.9rem;color:#065f46;">
+            <span id="label-text">${label ? label.replace(/</g, '&lt;').replace(/>/g, '&gt;') : ''}</span>
+            <button id="label-edit-btn" style="background:none;border:none;color:#059669;cursor:pointer;font-size:0.8rem;text-decoration:underline;margin-left:0.5rem;">edit</button>
+          </div>
+          <div id="label-form" style="display:${label ? 'none' : ''};max-width:320px;margin:0 auto;">
+            <p style="font-size:0.8rem;color:#888;margin-bottom:0.4rem;">Add your username (optional):</p>
+            <div style="display:flex;gap:0.5rem;align-items:center;justify-content:center;">
+              <input id="label-input" type="text" maxlength="100" placeholder="e.g. u/your-username" value="${label ? label.replace(/"/g, '&quot;') : ''}" style="padding:0.4rem 0.75rem;border:1.5px solid #d1d5db;border-radius:8px;font-size:0.85rem;width:200px;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='#059669'" onblur="this.style.borderColor='#d1d5db'">
+              <button id="label-save-btn" class="btn" style="padding:0.4rem 0.75rem;font-size:0.8rem;border-radius:8px;">Save</button>
+            </div>
+            <p id="label-msg" style="margin-top:0.25rem;font-size:0.8rem;color:#059669;display:none;"></p>
+          </div>
+        </div>
       </div>
       <div id="link-expired" style="display:none;">
         <p style="margin-top: 1.5rem; font-size: 1.1rem; color: #d97706; font-weight: 600;">Link expired</p>
@@ -81,6 +95,44 @@ export function appPage(linkUrl: string, createdAt: string, syncToken?: string):
       }
       updateCountdown();
 
+      // Label
+      var currentShortCode = '${shortCode}';
+      var labelSaveBtn = document.getElementById('label-save-btn');
+      var labelInput = document.getElementById('label-input');
+      var labelMsg = document.getElementById('label-msg');
+      var labelDisplay = document.getElementById('label-display');
+      var labelForm = document.getElementById('label-form');
+      var labelText = document.getElementById('label-text');
+
+      labelSaveBtn.addEventListener('click', function() {
+        var val = labelInput.value.trim();
+        if (!val) return;
+        labelSaveBtn.disabled = true;
+        labelSaveBtn.textContent = '...';
+        fetch('/api/v1/links/' + currentShortCode, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ label: val }),
+        }).then(function(r) { return r.json(); }).then(function(d) {
+          if (d.ok) {
+            labelText.textContent = val;
+            labelForm.style.display = 'none';
+            labelDisplay.style.display = '';
+          }
+          labelSaveBtn.disabled = false;
+          labelSaveBtn.textContent = 'Save';
+        }).catch(function() {
+          labelSaveBtn.disabled = false;
+          labelSaveBtn.textContent = 'Save';
+        });
+      });
+
+      document.getElementById('label-edit-btn').addEventListener('click', function() {
+        labelDisplay.style.display = 'none';
+        labelForm.style.display = '';
+        labelInput.focus();
+      });
+
     </script>
 
     <script type="module">
@@ -128,6 +180,13 @@ export function appPage(linkUrl: string, createdAt: string, syncToken?: string):
           document.getElementById('link-active').style.display = '';
           btn.textContent = 'Renew';
           btn.disabled = false;
+
+          // Reset label for new link
+          currentShortCode = linkData.shortCode;
+          labelDisplay.style.display = 'none';
+          labelForm.style.display = '';
+          labelInput.value = '';
+          labelText.textContent = '';
 
           // Reset countdown
           createdAt = new Date(linkData.createdAt).getTime();

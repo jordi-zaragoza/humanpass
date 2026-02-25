@@ -17,7 +17,8 @@ export function homePage(): string {
       <h1 style="font-size:2.25rem;line-height:1.2;margin-bottom:1rem;">Prove you're human.<br><span style="color:#059669;">In one tap.</span></h1>
       <p style="font-size:1.15rem;color:#555;max-width:480px;margin:0 auto 2rem;">
         The internet is flooded with bots and AI-generated content.
-        humanpass gives you a verification link that proves there's a real person behind your words.
+        humanpass uses <strong>WebAuthn/passkeys</strong> &mdash; the same standard behind Google, Apple, and GitHub logins &mdash;
+        to give you a verification link that proves there's a real person behind your words.
       </p>
       <a href="/app" class="btn" style="padding:1rem 2.5rem;font-size:1.1rem;border-radius:12px;">Get your link</a>
       <p style="margin-top:0.75rem;font-size:0.85rem;color:#999;">Free. No signup. No email. Just biometrics.</p>
@@ -54,6 +55,28 @@ export function homePage(): string {
     </div>
 
     <div style="margin:0 0 3rem;border-top:1px solid #eee;"></div>
+
+    <div style="max-width:520px;margin:0 auto 3rem;padding:1.5rem;background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:14px;">
+      <h2 style="font-size:1.1rem;margin-bottom:1rem;text-align:center;">Your biometric data never leaves your device</h2>
+      <div style="display:flex;align-items:center;gap:1rem;justify-content:center;flex-wrap:wrap;">
+        <div style="text-align:center;flex:1;min-width:140px;">
+          <div style="font-size:2rem;margin-bottom:0.25rem;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
+          </div>
+          <p style="font-size:0.8rem;color:#065f46;margin:0;font-weight:600;">Your device</p>
+          <p style="font-size:0.75rem;color:#666;margin:0.15rem 0 0;">Face ID / fingerprint<br>stays here</p>
+        </div>
+        <div style="font-size:1.5rem;color:#059669;flex-shrink:0;">&#10132;</div>
+        <div style="text-align:center;flex:1;min-width:140px;">
+          <div style="font-size:2rem;margin-bottom:0.25rem;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a4 4 0 0 0-8 0v2"/></svg>
+          </div>
+          <p style="font-size:0.8rem;color:#065f46;margin:0;font-weight:600;">Our server</p>
+          <p style="font-size:0.75rem;color:#666;margin:0.15rem 0 0;">Only receives a<br>cryptographic signature</p>
+        </div>
+      </div>
+      <p style="font-size:0.8rem;color:#666;text-align:center;margin:1rem 0 0;">We store a random ID and a public key. No fingerprint, no face scan, no personal info. <a href="/privacy" style="color:#059669;">Privacy policy</a></p>
+    </div>
 
     <div style="text-align:center;margin-bottom:3rem;">
       <h2 style="font-size:1.4rem;margin-bottom:0.5rem;">Try it yourself</h2>
@@ -119,19 +142,19 @@ export function homePage(): string {
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;text-align:left;">
         <div style="padding:1.25rem;background:#fff;border:1px solid #e5e7eb;border-radius:12px;">
           <strong style="font-size:0.95rem;">No passwords</strong>
-          <p style="font-size:0.85rem;color:#666;margin:0.25rem 0 0;">Passkeys only. Your biometrics never leave your device.</p>
+          <p style="font-size:0.85rem;color:#666;margin:0.25rem 0 0;">Uses WebAuthn passkeys &mdash; the same standard trusted by Google, Apple, and GitHub.</p>
         </div>
         <div style="padding:1.25rem;background:#fff;border:1px solid #e5e7eb;border-radius:12px;">
-          <strong style="font-size:0.95rem;">No personal data</strong>
-          <p style="font-size:0.85rem;color:#666;margin:0.25rem 0 0;">No email, no name, no tracking. Completely anonymous.</p>
+          <strong style="font-size:0.95rem;">Zero personal data</strong>
+          <p style="font-size:0.85rem;color:#666;margin:0.25rem 0 0;">No email, no name, no tracking. Your biometric never leaves your device &mdash; we only see a cryptographic signature.</p>
         </div>
         <div style="padding:1.25rem;background:#fff;border:1px solid #e5e7eb;border-radius:12px;">
           <strong style="font-size:0.95rem;">Instant</strong>
           <p style="font-size:0.85rem;color:#666;margin:0.25rem 0 0;">One biometric check. Your link is ready in seconds.</p>
         </div>
         <div style="padding:1.25rem;background:#fff;border:1px solid #e5e7eb;border-radius:12px;">
-          <strong style="font-size:0.95rem;">Open & verifiable</strong>
-          <p style="font-size:0.85rem;color:#666;margin:0.25rem 0 0;">Anyone can click your link to verify. No app needed.</p>
+          <strong style="font-size:0.95rem;">100% Open Source</strong>
+          <p style="font-size:0.85rem;color:#666;margin:0.25rem 0 0;">All our code is public on <a href="https://github.com/jordi-zaragoza/humanpass" style="color:#059669;font-weight:500;">GitHub</a>. Trust nothing blindly &mdash; verify it yourself.</p>
         </div>
       </div>
     </div>

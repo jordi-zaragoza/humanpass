@@ -17,6 +17,7 @@ export type Link = {
   id: string;
   user_id: string;
   short_code: string;
+  label: string | null;
   created_at: string;
 };
 
