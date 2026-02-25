@@ -128,3 +128,30 @@ export async function getLinksByUserId(
     .all();
   return results as unknown as Link[];
 }
+
+// --- Forum seed data ---
+
+export async function seedForumData(db: D1Database, datePart: string, timePart: string): Promise<void> {
+  const now = new Date().toISOString();
+  const users = [
+    { id: "forum-user-dave93", created_at: "2024-03-15T10:00:00Z" },
+    { id: "forum-user-xena", created_at: "2024-06-22T14:30:00Z" },
+    { id: "forum-user-sk8r", created_at: "2025-01-08T09:15:00Z" },
+    { id: "forum-user-linda", created_at: "2023-11-01T08:00:00Z" },
+  ];
+  const forumLinks = [
+    { id: "forum-link-dave93", user_id: "forum-user-dave93", short_code: `${datePart}-${timePart}-dv93` },
+    { id: "forum-link-xena", user_id: "forum-user-xena", short_code: `${datePart}-${timePart}-xn42` },
+    { id: "forum-link-sk8r", user_id: "forum-user-sk8r", short_code: `${datePart}-${timePart}-sk8r` },
+    { id: "forum-link-linda", user_id: "forum-user-linda", short_code: `${datePart}-${timePart}-lnda` },
+  ];
+  await db.batch([
+    ...users.map((u) =>
+      db.prepare("INSERT OR IGNORE INTO users (id, created_at) VALUES (?, ?)").bind(u.id, u.created_at)
+    ),
+    db.prepare("DELETE FROM links WHERE id LIKE 'forum-link-%'"),
+    ...forumLinks.map((l) =>
+      db.prepare("INSERT INTO links (id, user_id, short_code, created_at) VALUES (?, ?, ?, ?)").bind(l.id, l.user_id, l.short_code, now)
+    ),
+  ]);
+}

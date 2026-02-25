@@ -9,7 +9,8 @@ import { verifyPage, verifyFraudPage, verifyNotFoundPage } from "./pages/verify.
 import { privacyPage } from "./pages/privacy.js";
 import { developersPage } from "./pages/developers.js";
 import { popupPage } from "./pages/popup.js";
-import { getLinkByShortCode, getLinksByUserId, createLink } from "./db/queries.js";
+import { getLinkByShortCode, getLinksByUserId, createLink, seedForumData } from "./db/queries.js";
+import { forumPage } from "./pages/forum.js";
 import { SESSION_COOKIE_NAME, LINK_TTL_SECONDS } from "./constants.js";
 import type { SessionData } from "./types.js";
 import { nanoid } from "nanoid";
@@ -104,6 +105,23 @@ app.get("/privacy", (c) => {
 // Developers
 app.get("/developers", (c) => {
   return c.html(developersPage());
+});
+
+// Forum demo
+app.get("/forum", async (c) => {
+  const origin = getOrigin(c);
+  const now = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const datePart = `${now.getUTCFullYear()}${pad(now.getUTCMonth() + 1)}${pad(now.getUTCDate())}`;
+  const timePart = `${pad(now.getUTCHours())}${pad(now.getUTCMinutes())}`;
+  await seedForumData(c.env.DB, datePart, timePart);
+  const codes = {
+    dave: `${datePart}-${timePart}-dv93`,
+    xena: `${datePart}-${timePart}-xn42`,
+    sk8r: `${datePart}-${timePart}-sk8r`,
+    linda: `${datePart}-${timePart}-lnda`,
+  };
+  return c.html(forumPage(origin, codes));
 });
 
 // Popup verification (opened by SDK)
