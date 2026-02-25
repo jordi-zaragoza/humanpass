@@ -266,7 +266,7 @@ export function authPage(syncToken?: string): string {
 
         async function pollSync() {
           try {
-            var res = await fetch('/api/v1/sync/' + syncToken);
+            var res = await fetch('/api/v1/sync/' + syncToken, { cache: 'no-store' });
             var data = await res.json();
             if (data.scanned && !data.ready) {
               showSpinner();

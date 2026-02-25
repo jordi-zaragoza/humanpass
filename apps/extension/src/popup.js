@@ -41,7 +41,7 @@ function startPolling() {
 
 async function pollSync() {
   try {
-    const res = await fetch(`${API}/api/v1/sync/${syncToken}`);
+    const res = await fetch(`${API}/api/v1/sync/${syncToken}`, { cache: "no-store" });
     const data = await res.json();
 
     if (data.scanned && !data.ready) {
