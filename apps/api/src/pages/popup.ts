@@ -113,10 +113,7 @@ export function popupPage(): string {
               if (verifyRes.ok) {
                 var linkRes = await fetch('/api/v1/links', { method: 'POST' });
                 var linkData = await linkRes.json();
-                window.opener.postMessage({ verified: true, url: linkData.url, shortCode: linkData.shortCode, createdAt: linkData.createdAt }, '*');
-                document.getElementById('auth-section').style.display = 'none';
-                document.getElementById('success').style.display = '';
-                setTimeout(function() { window.close(); }, 1500);
+                sendResult({ verified: true, url: linkData.url, shortCode: linkData.shortCode, createdAt: linkData.createdAt });
                 return;
               }
             }
@@ -142,10 +139,7 @@ export function popupPage(): string {
           }
           var linkRes2 = await fetch('/api/v1/links', { method: 'POST' });
           var linkData2 = await linkRes2.json();
-          window.opener.postMessage({ verified: true, url: linkData2.url, shortCode: linkData2.shortCode, createdAt: linkData2.createdAt }, '*');
-          document.getElementById('auth-section').style.display = 'none';
-          document.getElementById('success').style.display = '';
-          setTimeout(function() { window.close(); }, 1500);
+          sendResult({ verified: true, url: linkData2.url, shortCode: linkData2.shortCode, createdAt: linkData2.createdAt });
         } catch (err) {
           errorDiv.textContent = err.message || 'Authentication failed. Please try again.';
           authBtn.disabled = false;
