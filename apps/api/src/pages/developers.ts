@@ -219,7 +219,7 @@ curl "https://human-pass.org/api/v1/verify/20260223-1432-rSBp?label=u/jordi-zara
         errorEl.style.display = 'none';
 
         try {
-          var data = await Humanpass.verify();
+          var data = await Humanpass.verify({ label: 'demo-user' });
           result.style.display = '';
           success.style.display = '';
           jsonEl.textContent = JSON.stringify(data, null, 2);
