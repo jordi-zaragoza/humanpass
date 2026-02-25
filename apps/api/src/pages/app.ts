@@ -182,7 +182,12 @@ export function authPage(syncToken?: string): string {
       } else {
         document.getElementById('qr-section').style.display = '';
 
-        var syncToken = Array.from({length:32},()=>Math.random().toString(36)[2]).join('');
+        // Reuse syncToken across reloads so we don't lose the link
+        var syncToken = sessionStorage.getItem('syncToken');
+        if (!syncToken) {
+          syncToken = Array.from({length:32},()=>Math.random().toString(36)[2]).join('');
+          sessionStorage.setItem('syncToken', syncToken);
+        }
         var qrUrl = window.location.origin + '/app?sync=' + syncToken;
         var qr = qrcode(0, 'M');
         qr.addData(qrUrl);
@@ -208,7 +213,8 @@ export function authPage(syncToken?: string): string {
             '</div>' +
             '<div id="sync-expired" style="display:none;">' +
             '<p style="margin-top: 1.5rem; font-size: 1.1rem; color: #d97706; font-weight: 600;">Link expired</p>' +
-            '<p style="color: #888; font-size: 0.9rem;">Scan the QR code again from your phone to get a new link.</p>' +
+            '<p style="color: #888; font-size: 0.9rem;">Tap <strong>Renew</strong> on your phone to get a new link.</p>' +
+            '<p style="font-size: 0.85rem; color: #059669; margin-top: 0.5rem;">Waiting for renewal...</p>' +
             '</div>';
           document.getElementById('sync-box').addEventListener('click', function() {
             navigator.clipboard.writeText(data.url);
@@ -240,6 +246,8 @@ export function authPage(syncToken?: string): string {
             if (remaining <= 0) {
               document.getElementById('sync-active').style.display = 'none';
               document.getElementById('sync-expired').style.display = '';
+              // Resume polling — phone renew will update sync KV
+              if (!pollInterval) pollInterval = setInterval(pollSync, 2000);
               return;
             }
             setTimeout(updateSyncCountdown, 1000);
@@ -268,6 +276,8 @@ export function authPage(syncToken?: string): string {
             }
           } catch(e) {}
         }
+        // Poll immediately on load to recover state after reload
+        pollSync();
         var pollInterval = setInterval(pollSync, 2000);
 
         // Poll immediately on focus/visibility change (timers throttled in background)
