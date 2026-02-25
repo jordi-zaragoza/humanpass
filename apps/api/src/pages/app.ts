@@ -31,8 +31,9 @@ export function appPage(linkUrl: string, createdAt: string, syncToken?: string):
       </div>
       <div id="link-expired" style="display:none;">
         <p style="margin-top: 1.5rem; font-size: 1.1rem; color: #d97706; font-weight: 600;">Link expired</p>
-        <p style="color: #888; font-size: 0.9rem; margin-bottom: 1rem;">Generate a new one to continue sharing.</p>
-        <button class="btn" id="renew-btn">Generate new link</button>
+        <p style="color: #888; font-size: 0.9rem; margin-bottom: 1rem;">Verify again to get a new link.</p>
+        <button class="btn" id="renew-btn">Renew</button>
+        <div id="renew-error" class="error" style="margin-top: 0.75rem;"></div>
       </div>
     </div>
 
@@ -80,9 +81,62 @@ export function appPage(linkUrl: string, createdAt: string, syncToken?: string):
       }
       updateCountdown();
 
+    </script>
+
+    <script type="module">
+      import { startAuthentication } from 'https://esm.sh/@simplewebauthn/browser@11';
+
+      var syncToken = ${syncToken ? `'${syncToken}'` : 'null'};
+
       document.getElementById('renew-btn').addEventListener('click', async function() {
-        await fetch('/api/v1/auth/reset', { method: 'POST' });
-        location.href = '/app${syncToken ? "?sync=" + syncToken : ""}';
+        var btn = this;
+        var errorDiv = document.getElementById('renew-error');
+        btn.disabled = true;
+        btn.textContent = 'Verifying...';
+        errorDiv.textContent = '';
+
+        try {
+          // 1. Get passkey options
+          var optRes = await fetch('/api/v1/auth/pass/options', { method: 'POST' });
+          var optData = await optRes.json();
+          if (!optRes.ok) throw new Error(optData.error || 'Failed to get auth options');
+
+          // 2. WebAuthn prompt
+          var credential = await startAuthentication({ optionsJSON: optData.options });
+
+          // 3. Verify
+          var verifyRes = await fetch('/api/v1/auth/pass/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ response: credential }),
+          });
+          if (!verifyRes.ok) throw new Error('Verification failed');
+
+          // 4. Get new link
+          var body = syncToken ? JSON.stringify({ syncToken: syncToken }) : '{}';
+          var linkRes = await fetch('/api/v1/links', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: body,
+          });
+          var linkData = await linkRes.json();
+          if (!linkRes.ok) throw new Error(linkData.error || 'Failed to create link');
+
+          // 5. Update UI in place
+          document.getElementById('link-url').textContent = linkData.url;
+          document.getElementById('link-expired').style.display = 'none';
+          document.getElementById('link-active').style.display = '';
+          btn.textContent = 'Renew';
+          btn.disabled = false;
+
+          // Reset countdown
+          createdAt = new Date(linkData.createdAt).getTime();
+          updateCountdown();
+        } catch (err) {
+          errorDiv.textContent = err.message || 'Authentication failed. Please try again.';
+          btn.textContent = 'Renew';
+          btn.disabled = false;
+        }
       });
     </script>
 
