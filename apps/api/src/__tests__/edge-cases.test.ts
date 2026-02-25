@@ -9,11 +9,11 @@ beforeAll(async () => {
 
 describe("Rate limit", () => {
   it("returns 429 when rate limit is exceeded", async () => {
-    // The pass endpoint has max: 20, windowSecs: 3600, prefix: "pass"
-    // Pre-seed KV with 20 timestamps to simulate exhausted limit
+    // The pass endpoint has max: 120, windowSecs: 3600, prefix: "pass"
+    // Pre-seed KV with 120 timestamps to simulate exhausted limit
     const ip = "10.0.0.42";
     const now = Math.floor(Date.now() / 1000);
-    const timestamps = Array.from({ length: 20 }, (_, i) => now - i);
+    const timestamps = Array.from({ length: 120 }, (_, i) => now - i);
     await env.KV.put(`rl:pass:${ip}`, JSON.stringify(timestamps), { expirationTtl: 3600 });
 
     const res = await SELF.fetch("https://test.local/api/v1/auth/pass/options", {

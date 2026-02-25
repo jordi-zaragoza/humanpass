@@ -21,6 +21,7 @@ export function homePage(): string {
       </p>
       <a href="/app" class="btn" style="padding:1rem 2.5rem;font-size:1.1rem;border-radius:12px;">Get your link</a>
       <p style="margin-top:0.75rem;font-size:0.85rem;color:#999;">Free. No signup. No email. Just biometrics.</p>
+      <p id="stats" style="margin-top:1rem;font-size:0.9rem;color:#059669;font-weight:600;opacity:0;transition:opacity 0.3s;"></p>
     </div>
 
     <div style="margin:3rem 0;border-top:1px solid #eee;"></div>
@@ -77,12 +78,22 @@ export function homePage(): string {
 
       <div style="display:flex;justify-content:center;gap:0.75rem;margin-top:1.5rem;flex-wrap:wrap;">
         <span style="font-size:0.8rem;color:#999;background:#f3f4f6;padding:0.35rem 0.75rem;border-radius:99px;">Social media</span>
-        <span style="font-size:0.8rem;color:#999;background:#f3f4f6;padding:0.35rem 0.75rem;border-radius:99px;">Forums</span>
+        <a href="/forum" style="font-size:0.8rem;color:#999;background:#f3f4f6;padding:0.35rem 0.75rem;border-radius:99px;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='#059669'" onmouseout="this.style.color='#999'">Forums</a>
         <span style="font-size:0.8rem;color:#999;background:#f3f4f6;padding:0.35rem 0.75rem;border-radius:99px;">Chat</span>
         <span style="font-size:0.8rem;color:#999;background:#f3f4f6;padding:0.35rem 0.75rem;border-radius:99px;">Email</span>
         <span style="font-size:0.8rem;color:#999;background:#f3f4f6;padding:0.35rem 0.75rem;border-radius:99px;">Any website</span>
       </div>
     </div>
+
+    <script>
+      fetch('/api/v1/stats').then(function(r){return r.json()}).then(function(d){
+        if (d.verifications >= 100) {
+          var el = document.getElementById('stats');
+          el.textContent = d.verifications.toLocaleString() + ' verifications made';
+          el.style.opacity = '1';
+        }
+      });
+    </script>
 
     <script src="/sdk.js"></script>
     <script>
@@ -124,6 +135,8 @@ export function homePage(): string {
         </div>
       </div>
     </div>
+
+    <div style="margin:0 0 3rem;border-top:1px solid #eee;"></div>
 
     <div style="text-align:center;padding:2.5rem 0;background:#f9fafb;border-radius:16px;margin-bottom:2rem;">
       <p style="font-size:1.1rem;color:#333;margin-bottom:1.25rem;">Ready to prove you're human?</p>

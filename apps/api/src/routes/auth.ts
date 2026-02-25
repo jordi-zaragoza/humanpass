@@ -27,7 +27,7 @@ const auth = new Hono<{ Bindings: Env }>();
 
 // Rate limits
 const registerLimit = rateLimit({ max: 50, windowSecs: 86400, prefix: "register" });  // 50/day (raise to 3 in prod)
-const passLimit = rateLimit({ max: 20, windowSecs: 3600, prefix: "pass" });           // 20/hour
+const passLimit = rateLimit({ max: 120, windowSecs: 3600, prefix: "pass" });          // 120/hour (60 renews)
 
 // --- Registration ---
 

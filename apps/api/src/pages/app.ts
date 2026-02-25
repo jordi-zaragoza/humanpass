@@ -167,6 +167,7 @@ export function authPage(syncToken?: string): string {
 
     <div class="section" id="auth-section" style="display: none;">
       <button class="btn" id="auth-btn">Continue with passkey</button>
+      <p style="margin-top:0.75rem;font-size:0.8rem;color:#888;max-width:360px;margin-left:auto;margin-right:auto;">Your device may ask to "create a passkey" — that's just how it sets up biometric verification.</p>
       <div id="error" class="error"></div>
       <p id="stuck-hint" style="display:none;margin-top:1.25rem;font-size:0.8rem;color:#b45309;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:0.75rem 1rem;max-width:400px;margin-left:auto;margin-right:auto;">
         Stuck? If you use a third-party password manager (NordPass, 1Password, etc.) as your passkey provider, try switching to your device's built-in option (Google Password Manager or iCloud Keychain) in your device settings.

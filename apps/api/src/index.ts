@@ -90,6 +90,12 @@ app.get("/api/v1/sync/:token", async (c) => {
   return c.json({ ready: true, ...data });
 });
 
+// Stats
+app.get("/api/v1/stats", async (c) => {
+  const row = await c.env.DB.prepare("SELECT COUNT(*) as count FROM links").first();
+  return c.json({ verifications: row?.count ?? 0 });
+});
+
 // --- Pages ---
 
 // Landing page
