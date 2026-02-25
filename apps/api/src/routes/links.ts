@@ -22,19 +22,24 @@ links.post("/", linkLimit, async (c) => {
   const userId = c.get("userId");
   const origin = getOrigin(c);
 
+  // Parse body early (needed for label + syncToken)
+  const body = await c.req.json().catch(() => ({}));
+  const label = typeof body.label === "string" ? body.label.slice(0, 100).trim() || undefined : undefined;
+
   // Reuse existing link only if it hasn't expired
   const existing = await getLinksByUserId(c.env.DB, userId, 1);
   if (existing.length > 0) {
     const age = (Date.now() - new Date(existing[0].created_at).getTime()) / 1000;
     if (age < LINK_TTL_SECONDS) {
+      // Update label if provided and different
+      if (label && existing[0].label !== label) {
+        await updateLinkLabel(c.env.DB, existing[0].short_code, userId, label);
+        existing[0].label = label;
+      }
       const url = `${origin}/v/${existing[0].short_code}`;
-      return c.json({ url, shortCode: existing[0].short_code, createdAt: existing[0].created_at });
+      return c.json({ url, shortCode: existing[0].short_code, createdAt: existing[0].created_at, ...(existing[0].label ? { label: existing[0].label } : {}) });
     }
   }
-
-  // Parse body early (needed for label + syncToken)
-  const body = await c.req.json().catch(() => ({}));
-  const label = typeof body.label === "string" ? body.label.slice(0, 100).trim() || undefined : undefined;
 
   // Create new link (existing expired or none)
   const now = new Date();
@@ -51,7 +56,7 @@ links.post("/", linkLimit, async (c) => {
     }), { expirationTtl: 300 });
   }
 
-  return c.json({ url, shortCode: link.short_code, createdAt: link.created_at });
+  return c.json({ url, shortCode: link.short_code, createdAt: link.created_at, ...(link.label ? { label: link.label } : {}) });
 });
 
 links.patch("/:code", async (c) => {
