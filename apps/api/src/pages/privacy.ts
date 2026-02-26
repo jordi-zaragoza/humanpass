@@ -101,6 +101,11 @@ export function privacyPage(): string {
     </div>
 
     <div class="section">
+      <h2>Open source</h2>
+      <p>humanpass is open source under the <a href="https://github.com/jordi-zaragoza/humanpass/blob/master/LICENSE" style="color:#555;">AGPL-3.0 license</a>. You can view, modify, and distribute the source code on <a href="https://github.com/jordi-zaragoza/humanpass" style="color:#555;">GitHub</a>.</p>
+    </div>
+
+    <div class="section">
       <h2>Changes to this policy</h2>
       <p>We may update this policy from time to time. Changes will be posted on this page with an updated date.</p>
     </div>

@@ -169,4 +169,4 @@ Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/hum
 
 ## License
 
-[BSL 1.1](LICENSE). Free for non-commercial use. Converts to Apache 2.0 on 2030-02-23.
+[AGPL-3.0](LICENSE)
