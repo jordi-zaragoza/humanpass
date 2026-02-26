@@ -5,7 +5,7 @@
   "description": "Generate humanpass verification links with one click",
   "permissions": [],
   "host_permissions": [
-    "https://humanpass.latent-k.workers.dev/*"
+    "https://human-pass.org/*"
   ],
   "action": {
     "default_popup": "popup.html",

@@ -16,8 +16,8 @@
     }
   ],
   "vars": {
-    "RP_ID": "humanpass.latent-k.workers.dev",
+    "RP_ID": "human-pass.org",
     "RP_NAME": "humanpass",
-    "RP_ORIGIN": "https://humanpass.latent-k.workers.dev"
+    "RP_ORIGIN": "https://human-pass.org"
   }
 }
