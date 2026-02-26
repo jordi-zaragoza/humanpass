@@ -1,6 +1,6 @@
 # humanpass
 
-**[human-pass.org](https://human-pass.org)** — Proof of humanness for the AI era.
+**[human-pass.org](https://human-pass.org)**. Proof of humanness for the AI era.
 
 Humanpass uses biometric passkeys to prove a real, physical human is on the other side. No passwords, no personal data, no puzzles. 100% open source.
 
@@ -9,11 +9,11 @@ Humanpass uses biometric passkeys to prove a real, physical human is on the othe
 You can no longer tell if what you're reading online was written by a person or a bot. Current estimates put bot traffic at ~30% of the internet, and with agentic AI that number is only going up.
 
 The existing solutions don't cut it:
-- **CAPTCHAs** — AI solves them better than humans. GPT-4V already cracks visual CAPTCHAs.
-- **Blue checks** — Pay-to-play, proves nothing about humanness.
-- **Worldcoin** — Requires iris scanning and centralized biometric storage.
+- **CAPTCHAs**. AI solves them better than humans. GPT-4V already cracks visual CAPTCHAs.
+- **Blue checks**. Pay-to-play, proves nothing about humanness.
+- **Worldcoin**. Requires iris scanning and centralized biometric storage.
 
-We need something that proves "a real human was physically present" — without collecting personal data.
+We need something that proves "a real human was physically present" without collecting personal data.
 
 ## How humanpass works
 
@@ -31,7 +31,7 @@ We need something that proves "a real human was physically present" — without 
 ```
 
 1. The user taps their fingerprint or Face ID on their own device
-2. The device's secure enclave creates a **cryptographic signature** — the biometric never leaves the device
+2. The device's secure enclave creates a **cryptographic signature**. The biometric never leaves the device.
 3. Humanpass receives only the signature + a public key, and generates a short-lived verification link (expires in 60 seconds)
 4. Anyone can click the link to verify, or your backend can verify it via API
 
@@ -57,7 +57,7 @@ Humanpass stores **zero personal data**:
 - Server only stores: a random credential ID + public key + timestamps
 - All verification links expire after 60 seconds
 
-You don't have to trust us — [read the code](https://github.com/jordi-zaragoza/humanpass).
+You don't have to trust us. [Read the code](https://github.com/jordi-zaragoza/humanpass).
 
 ## Integration
 
@@ -146,7 +146,7 @@ if (data.verified && !data.labelMismatch) {
 
 ## Chrome Extension
 
-Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/humanpass/ndglfpaoghonkmlihklbdnaplcbbldmd) — verify with one click from any website.
+Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/humanpass/ndglfpaoghonkmlihklbdnaplcbbldmd). Verify with one click from any website.
 
 ## Tech stack
 
@@ -166,4 +166,4 @@ Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/hum
 
 ## License
 
-[BSL 1.1](LICENSE) — free for non-commercial use. Converts to Apache 2.0 on 2030-02-23.
+[BSL 1.1](LICENSE). Free for non-commercial use. Converts to Apache 2.0 on 2030-02-23.
