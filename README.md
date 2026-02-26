@@ -4,6 +4,8 @@
 
 Humanpass uses biometric passkeys to prove a real, physical human is on the other side. No passwords, no personal data, no puzzles. 100% open source.
 
+**Important:** Humanpass is not about stopping humans from using AI tools. You can write with ChatGPT, translate with DeepL, or use any LLM you want. The problem humanpass solves is **autonomous bots** impersonating humans at scale, with no real person behind the screen.
+
 ## The problem
 
 You can no longer tell if what you're reading online was written by a person or a bot. Current estimates put bot traffic at ~30% of the internet, and with agentic AI that number is only going up.
