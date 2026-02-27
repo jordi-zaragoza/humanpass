@@ -356,7 +356,8 @@ export function authPage(syncToken?: string): string {
       const phoneSyncToken = params.get('sync');
 
       const authBtn = document.getElementById('auth-btn');
-      if (authBtn) authBtn.addEventListener('click', async () => {
+
+      async function doAuth() {
         authBtn.disabled = true;
         const errorDiv = document.getElementById('error');
         errorDiv.textContent = '';
@@ -406,8 +407,19 @@ export function authPage(syncToken?: string): string {
           clearTimeout(stuckTimer);
           errorDiv.textContent = err.message || 'Authentication failed. Please try again.';
           authBtn.disabled = false;
+          // Show button so user can retry manually
+          document.getElementById('auth-section').style.display = '';
         }
-      });
+      }
+
+      if (authBtn) authBtn.addEventListener('click', doAuth);
+
+      // Auto-trigger auth when arriving from QR scan (skip the button click)
+      if (phoneSyncToken && authBtn) {
+        document.getElementById('auth-section').style.display = '';
+        authBtn.textContent = 'Verifying...';
+        doAuth();
+      }
     </script>
 
     <footer style="text-align:center;padding:2rem 0 0;color:#aaa;font-size:0.8rem;">
