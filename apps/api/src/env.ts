@@ -6,4 +6,5 @@ export type Env = {
   RP_ID: string;
   RP_NAME: string;
   RP_ORIGIN: string;
+  ADMIN_TOKEN: string;
 };

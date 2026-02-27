@@ -9,6 +9,8 @@ import { verifyPage, verifyFraudPage, verifyNotFoundPage } from "./pages/verify.
 import { privacyPage } from "./pages/privacy.js";
 import { developersPage } from "./pages/developers.js";
 import { popupPage } from "./pages/popup.js";
+import { adminPage } from "./pages/admin.js";
+import type { AdminStats } from "./pages/admin.js";
 import { getLinkByShortCode, getLinksByUserId, createLink, seedForumData } from "./db/queries.js";
 import { forumPage } from "./pages/forum.js";
 import { SESSION_COOKIE_NAME, LINK_TTL_SECONDS } from "./constants.js";
@@ -111,6 +113,49 @@ app.get("/privacy", (c) => {
 // Developers
 app.get("/developers", (c) => {
   return c.html(developersPage());
+});
+
+// Admin dashboard
+app.get("/admin", async (c) => {
+  if (c.req.query("token") !== c.env.ADMIN_TOKEN) {
+    return c.text("Unauthorized", 401);
+  }
+
+  const db = c.env.DB;
+  const [totalUsers, totalCredentials, totalLinks, newUsers24h, newLinks24h, linksByDay, topUsers] =
+    await Promise.all([
+      db.prepare("SELECT COUNT(*) as count FROM users").first<{ count: number }>(),
+      db.prepare("SELECT COUNT(*) as count FROM credentials").first<{ count: number }>(),
+      db.prepare("SELECT COUNT(*) as count FROM links").first<{ count: number }>(),
+      db
+        .prepare("SELECT COUNT(*) as count FROM users WHERE created_at > datetime('now', '-1 day')")
+        .first<{ count: number }>(),
+      db
+        .prepare("SELECT COUNT(*) as count FROM links WHERE created_at > datetime('now', '-1 day')")
+        .first<{ count: number }>(),
+      db
+        .prepare(
+          "SELECT date(created_at) as day, COUNT(*) as count FROM links WHERE created_at > datetime('now', '-7 days') GROUP BY day ORDER BY day DESC"
+        )
+        .all<{ day: string; count: number }>(),
+      db
+        .prepare(
+          "SELECT user_id, COUNT(*) as link_count FROM links GROUP BY user_id ORDER BY link_count DESC LIMIT 10"
+        )
+        .all<{ user_id: string; link_count: number }>(),
+    ]);
+
+  const stats: AdminStats = {
+    totalUsers: totalUsers?.count ?? 0,
+    totalCredentials: totalCredentials?.count ?? 0,
+    totalLinks: totalLinks?.count ?? 0,
+    newUsers24h: newUsers24h?.count ?? 0,
+    newLinks24h: newLinks24h?.count ?? 0,
+    linksByDay: linksByDay.results,
+    topUsers: topUsers.results,
+  };
+
+  return c.html(adminPage(stats));
 });
 
 // Forum demo
