@@ -18,7 +18,6 @@
   "vars": {
     "RP_ID": "human-pass.org",
     "RP_NAME": "humanpass",
-    "RP_ORIGIN": "https://human-pass.org",
-    "ADMIN_TOKEN": "dev-secret"
+    "RP_ORIGIN": "https://human-pass.org"
   }
 }
